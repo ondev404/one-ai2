@@ -1,0 +1,7 @@
+{
+  "name": "oneai",
+  "version": "2.0.0",
+  "private": true,
+  "description": "oneAi AI assistant",
+  "engines": {"node": ">=18"}
+}
