@@ -1,0 +1,2244 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>oneAi — AI Assistant</title>
+<meta name="theme-color" content="#0b0b0f">
+<meta name="description" content="oneAi — AI Assistant by ONEDEV">
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+:root{
+    --bg:#0b0b0f;
+    --bg2:#101014;
+    --panel:#17171c;
+    --panel2:#1e1e24;
+    --border:rgba(255,255,255,.09);
+    --text:#f5f5f7;
+    --muted:#92929d;
+    --hover:rgba(255,255,255,.07);
+    --accent:#fff;
+    --accentText:#080808;
+    --danger:#ef4444;
+}
+
+body.light{
+    --bg:#f7f7f8;
+    --bg2:#fff;
+    --panel:#fff;
+    --panel2:#eeeeF1;
+    --border:rgba(0,0,0,.1);
+    --text:#151515;
+    --muted:#707070;
+    --hover:rgba(0,0,0,.06);
+    --accent:#111;
+    --accentText:#fff;
+}
+
+html,
+body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+}
+
+body{
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+    background:var(--bg);
+    color:var(--text);
+}
+
+button,
+textarea{
+    font-family:inherit;
+}
+
+button{
+    -webkit-tap-highlight-color:transparent;
+}
+
+/* =========================
+   APP
+========================= */
+
+.app{
+    width:100%;
+    height:100dvh;
+    display:flex;
+    overflow:hidden;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+
+.sidebar{
+    width:280px;
+    height:100%;
+    flex-shrink:0;
+    display:flex;
+    flex-direction:column;
+    background:var(--bg2);
+    border-right:1px solid var(--border);
+    z-index:100;
+    transition:.25s;
+}
+
+.sidebar-top{
+    padding:15px;
+}
+
+.new-chat{
+    width:100%;
+    height:45px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    background:var(--panel);
+    color:var(--text);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:9px;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:600;
+}
+
+.new-chat:hover{
+    background:var(--hover);
+}
+
+.sidebar-title{
+    padding:10px 18px;
+    color:var(--muted);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    font-weight:700;
+}
+
+.history{
+    flex:1;
+    overflow-y:auto;
+    padding:0 10px 10px;
+}
+
+.history-empty{
+    color:var(--muted);
+    text-align:center;
+    font-size:13px;
+    padding:30px 10px;
+}
+
+.history-item{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    padding:10px 11px;
+    border-radius:9px;
+    cursor:pointer;
+    margin-bottom:2px;
+}
+
+.history-item:hover,
+.history-item.active{
+    background:var(--hover);
+}
+
+.history-icon{
+    color:var(--muted);
+    flex-shrink:0;
+}
+
+.history-name{
+    flex:1;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    font-size:13px;
+}
+
+.history-delete{
+    width:27px;
+    height:27px;
+    border:0;
+    background:transparent;
+    color:var(--muted);
+    border-radius:7px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    opacity:0;
+}
+
+.history-item:hover .history-delete{
+    opacity:1;
+}
+
+.history-delete:hover{
+    color:var(--danger);
+    background:rgba(239,68,68,.1);
+}
+
+.sidebar-bottom{
+    padding:12px;
+    border-top:1px solid var(--border);
+}
+
+.profile{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:7px;
+}
+
+.profile-logo{
+    width:36px;
+    height:36px;
+    object-fit:cover;
+    border-radius:10px;
+}
+
+.profile-text strong{
+    display:block;
+    font-size:13px;
+}
+
+.profile-text span{
+    display:block;
+    color:var(--muted);
+    font-size:11px;
+    margin-top:2px;
+}
+
+/* =========================
+   MAIN
+========================= */
+
+.main{
+    min-width:0;
+    flex:1;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    position:relative;
+    background:var(--bg);
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.header{
+    height:64px;
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 17px;
+    border-bottom:1px solid var(--border);
+    background:var(--bg);
+    z-index:20;
+}
+
+.header-left,
+.header-right{
+    display:flex;
+    align-items:center;
+    gap:7px;
+}
+
+.menu-btn,
+.header-btn{
+    width:40px;
+    height:40px;
+    border:0;
+    border-radius:10px;
+    background:transparent;
+    color:var(--text);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+}
+
+.menu-btn:hover,
+.header-btn:hover{
+    background:var(--hover);
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:9px;
+}
+
+.brand-logo{
+    width:34px;
+    height:34px;
+    border-radius:9px;
+    object-fit:cover;
+}
+
+.brand-name{
+    font-size:16px;
+    font-weight:700;
+}
+
+.brand-status{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    color:var(--muted);
+    font-size:10px;
+    margin-top:1px;
+}
+
+.status-dot{
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:#22c55e;
+}
+
+/* =========================
+   CHAT
+========================= */
+
+.chat{
+    flex:1;
+    overflow-y:auto;
+}
+
+.chat-inner{
+    width:min(850px,100%);
+    margin:auto;
+    padding:35px 24px 145px;
+}
+
+/* =========================
+   WELCOME
+========================= */
+
+.welcome{
+    min-height:calc(100vh - 230px);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+}
+
+.welcome-logo{
+    width:74px;
+    height:74px;
+    object-fit:cover;
+    border-radius:20px;
+    margin-bottom:20px;
+}
+
+.welcome h1{
+    font-size:30px;
+    letter-spacing:-.04em;
+    margin-bottom:9px;
+}
+
+.welcome p{
+    max-width:510px;
+    color:var(--muted);
+    line-height:1.7;
+    font-size:14px;
+}
+
+.quick-actions{
+    width:min(600px,100%);
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-top:28px;
+}
+
+.quick-btn{
+    min-height:75px;
+    padding:13px;
+    border:1px solid var(--border);
+    background:var(--panel);
+    border-radius:13px;
+    color:var(--text);
+    text-align:left;
+    cursor:pointer;
+}
+
+.quick-btn:hover{
+    background:var(--hover);
+}
+
+.quick-icon{
+    width:27px;
+    height:27px;
+    color:var(--muted);
+    margin-bottom:7px;
+}
+
+.quick-btn strong{
+    display:block;
+    font-size:13px;
+}
+
+.quick-btn span{
+    display:block;
+    color:var(--muted);
+    font-size:11px;
+    margin-top:3px;
+}
+
+/* =========================
+   MESSAGE
+========================= */
+
+.message{
+    display:flex;
+    gap:12px;
+    margin-bottom:30px;
+    animation:appear .2s ease;
+}
+
+@keyframes appear{
+    from{
+        opacity:0;
+        transform:translateY(5px);
+    }
+    to{
+        opacity:1;
+        transform:none;
+    }
+}
+
+.message.user{
+    justify-content:flex-end;
+}
+
+.message.user .message-content{
+    max-width:75%;
+}
+
+.message.ai .message-content{
+    flex:1;
+    min-width:0;
+}
+
+.avatar{
+    width:34px;
+    height:34px;
+    flex-shrink:0;
+    border-radius:10px;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.avatar img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.user-avatar{
+    background:var(--panel2);
+    color:var(--muted);
+}
+
+.message-name{
+    color:var(--muted);
+    font-size:11px;
+    font-weight:600;
+    margin-bottom:6px;
+}
+
+.user .message-name{
+    text-align:right;
+}
+
+.bubble{
+    font-size:14px;
+    line-height:1.7;
+    word-break:break-word;
+}
+
+.user .bubble{
+    padding:11px 15px;
+    border-radius:17px 17px 5px 17px;
+    border:1px solid var(--border);
+    background:var(--panel2);
+}
+
+.bubble p{
+    margin-bottom:11px;
+}
+
+.bubble p:last-child{
+    margin-bottom:0;
+}
+
+.bubble ul{
+    padding-left:22px;
+    margin:10px 0;
+}
+
+.bubble li{
+    margin:4px 0;
+}
+
+.bubble code{
+    padding:2px 5px;
+    border-radius:5px;
+    background:var(--panel2);
+    border:1px solid var(--border);
+    font-size:12px;
+}
+
+.code-wrap{
+    margin:14px 0;
+    border:1px solid rgba(255,255,255,.09);
+    background:#09090c;
+    border-radius:12px;
+    overflow:hidden;
+}
+
+.code-head{
+    height:36px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 12px;
+    color:#a1a1aa;
+    font-size:11px;
+    border-bottom:1px solid rgba(255,255,255,.07);
+}
+
+.copy-code{
+    border:0;
+    background:transparent;
+    color:#aaa;
+    display:flex;
+    align-items:center;
+    gap:5px;
+    cursor:pointer;
+}
+
+.code-wrap pre{
+    margin:0;
+    padding:15px;
+    overflow-x:auto;
+}
+
+.code-wrap pre code{
+    background:none;
+    border:0;
+    color:#e5e7eb;
+    padding:0;
+    font-family:Consolas,monospace;
+    line-height:1.6;
+}
+
+.message-actions{
+    display:flex;
+    gap:3px;
+    margin-top:8px;
+}
+
+.action-btn{
+    width:31px;
+    height:30px;
+    border:0;
+    border-radius:8px;
+    background:transparent;
+    color:var(--muted);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+}
+
+.action-btn:hover{
+    color:var(--text);
+    background:var(--hover);
+}
+
+/* =========================
+   TYPING
+========================= */
+
+.typing{
+    display:flex;
+    gap:5px;
+    height:25px;
+    align-items:center;
+}
+
+.typing span{
+    width:5px;
+    height:5px;
+    background:var(--muted);
+    border-radius:50%;
+    animation:typing 1.1s infinite;
+}
+
+.typing span:nth-child(2){
+    animation-delay:.15s;
+}
+
+.typing span:nth-child(3){
+    animation-delay:.3s;
+}
+
+@keyframes typing{
+    0%,60%,100%{
+        opacity:.3;
+        transform:translateY(0);
+    }
+    30%{
+        opacity:1;
+        transform:translateY(-4px);
+    }
+}
+
+/* =========================
+   INPUT
+========================= */
+
+.input-area{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    padding:14px 20px 17px;
+    background:linear-gradient(
+        to bottom,
+        transparent,
+        var(--bg) 25%
+    );
+    z-index:15;
+}
+
+.input-container{
+    width:min(850px,100%);
+    margin:auto;
+}
+
+.input-box{
+    min-height:58px;
+    display:flex;
+    align-items:flex-end;
+    gap:7px;
+    padding:8px;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:17px;
+}
+
+.input-box:focus-within{
+    border-color:rgba(255,255,255,.2);
+}
+
+.input-btn,
+.send-btn{
+    width:40px;
+    height:40px;
+    flex-shrink:0;
+    border:0;
+    border-radius:11px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+}
+
+.input-btn{
+    color:var(--muted);
+    background:transparent;
+}
+
+.input-btn:hover{
+    color:var(--text);
+    background:var(--hover);
+}
+
+.send-btn{
+    color:var(--accentText);
+    background:var(--accent);
+}
+
+.send-btn:disabled{
+    opacity:.4;
+    cursor:not-allowed;
+}
+
+textarea{
+    flex:1;
+    min-width:0;
+    min-height:40px;
+    max-height:180px;
+    resize:none;
+    outline:none;
+    border:0;
+    background:transparent;
+    color:var(--text);
+    font-size:14px;
+    line-height:1.5;
+    padding:9px 3px;
+}
+
+textarea::placeholder{
+    color:var(--muted);
+}
+
+.disclaimer{
+    text-align:center;
+    color:var(--muted);
+    font-size:10px;
+    margin-top:7px;
+}
+
+/* =========================
+   TOAST
+========================= */
+
+.toast{
+    position:fixed;
+    left:50%;
+    bottom:85px;
+    transform:translate(-50%,15px);
+    opacity:0;
+    pointer-events:none;
+    background:#18181b;
+    color:white;
+    border:1px solid rgba(255,255,255,.1);
+    padding:10px 14px;
+    border-radius:10px;
+    font-size:12px;
+    transition:.2s;
+    z-index:500;
+}
+
+.toast.show{
+    opacity:1;
+    transform:translate(-50%,0);
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:760px){
+
+    .sidebar{
+        position:fixed;
+        left:0;
+        top:0;
+        bottom:0;
+        transform:translateX(-100%);
+        box-shadow:20px 0 50px rgba(0,0,0,.4);
+    }
+
+    .sidebar.open{
+        transform:translateX(0);
+    }
+
+    .header{
+        height:62px;
+        padding:0 9px;
+    }
+
+    .brand-status{
+        display:none;
+    }
+
+    .brand-logo{
+        width:32px;
+        height:32px;
+    }
+
+    .chat-inner{
+        padding:25px 14px 140px;
+    }
+
+    .welcome{
+        min-height:calc(100vh - 210px);
+    }
+
+    .welcome h1{
+        font-size:25px;
+    }
+
+    .welcome p{
+        font-size:13px;
+    }
+
+    .welcome-logo{
+        width:64px;
+        height:64px;
+    }
+
+    .quick-actions{
+        grid-template-columns:1fr;
+        margin-top:22px;
+    }
+
+    .message{
+        gap:8px;
+        margin-bottom:24px;
+    }
+
+    .message.user .message-content{
+        max-width:86%;
+    }
+
+    .avatar{
+        width:30px;
+        height:30px;
+        border-radius:9px;
+    }
+
+    .bubble{
+        font-size:13px;
+    }
+
+    .input-area{
+        padding:9px 9px 11px;
+    }
+
+    .input-box{
+        min-height:54px;
+        border-radius:15px;
+    }
+
+    .input-btn,
+    .send-btn{
+        width:38px;
+        height:38px;
+    }
+}
+
+/* =========================
+   DESKTOP SIDEBAR COLLAPSE
+========================= */
+
+@media(min-width:761px){
+
+    .sidebar.collapsed{
+        width:0;
+        overflow:hidden;
+        border:0;
+    }
+
+}
+
+/* =========================
+   MOBILE OVERLAY
+========================= */
+
+.overlay{
+    display:none;
+}
+
+@media(max-width:760px){
+
+    .overlay.show{
+        display:block;
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,.5);
+        z-index:90;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+
+    <div class="sidebar-top">
+
+        <button class="new-chat" id="newChatBtn">
+
+            <svg width="19" height="19" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12h14"/>
+            </svg>
+
+            Chat baru
+
+        </button>
+
+    </div>
+
+    <div class="sidebar-title">
+        Riwayat
+    </div>
+
+    <div class="history" id="history">
+
+        <div class="history-empty" id="historyEmpty">
+            Belum ada percakapan.
+        </div>
+
+    </div>
+
+    <div class="sidebar-bottom">
+
+        <div class="profile">
+
+            <img src="logo.png"
+                 class="profile-logo"
+                 alt="oneAi">
+
+            <div class="profile-text">
+
+                <strong>oneAi</strong>
+
+                <span>Developed by ONEDEV</span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</aside>
+
+<div class="overlay" id="overlay"></div>
+
+<!-- MAIN -->
+<main class="main">
+
+<header class="header">
+
+    <div class="header-left">
+
+        <button class="menu-btn"
+                id="menuBtn"
+                title="Menu">
+
+            <svg width="20" height="20"
+                 viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2">
+                <path d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+
+        </button>
+
+        <div class="brand">
+
+            <img src="logo.png"
+                 class="brand-logo"
+                 alt="oneAi">
+
+            <div>
+
+                <div class="brand-name">
+                    oneAi
+                </div>
+
+                <div class="brand-status">
+
+                    <span class="status-dot"></span>
+
+                    Online
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="header-right">
+
+        <button class="header-btn"
+                id="themeBtn"
+                title="Ganti tema">
+
+            <svg id="themeIcon"
+                 width="20"
+                 height="20"
+                 viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2">
+            </svg>
+
+        </button>
+
+    </div>
+
+</header>
+
+<!-- CHAT -->
+<section class="chat" id="chat">
+
+<div class="chat-inner" id="chatInner">
+
+<div class="welcome" id="welcome">
+
+    <img src="logo.png"
+         class="welcome-logo"
+         alt="oneAi">
+
+    <h1>Bagaimana saya bisa membantu?</h1>
+
+    <p>
+        Tanya apa saja kepada oneAi.
+        Mulai dari coding, ide, informasi,
+        sampai berbagai kebutuhan lainnya.
+    </p>
+
+    <div class="quick-actions">
+
+        <button class="quick-btn"
+                data-prompt="Bantu saya membuat website modern menggunakan HTML, CSS, dan JavaScript.">
+
+            <div class="quick-icon">
+
+                <svg width="25" height="25"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2">
+                    <path d="M4 5h16v14H4z"/>
+                    <path d="m8 9 3 3-3 3M13 15h3"/>
+                </svg>
+
+            </div>
+
+            <strong>Bantu coding</strong>
+
+            <span>Buat atau perbaiki kode</span>
+
+        </button>
+
+        <button class="quick-btn"
+                data-prompt="Berikan saya beberapa ide kreatif yang bisa saya kerjakan.">
+
+            <div class="quick-icon">
+
+                <svg width="25" height="25"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2">
+                    <path d="M9 18h6"/>
+                    <path d="M10 22h4"/>
+                    <path d="M8.5 14.5A7 7 0 1 1 15.5 14.5C14.6 15.3 14 16.2 14 17H10c0-.8-.6-1.7-1.5-2.5Z"/>
+                </svg>
+
+            </div>
+
+            <strong>Cari ide</strong>
+
+            <span>Dapatkan inspirasi baru</span>
+
+        </button>
+
+        <button class="quick-btn"
+                data-prompt="Jelaskan konsep pemrograman yang sulit dengan bahasa yang sederhana dan mudah dipahami.">
+
+            <div class="quick-icon">
+
+                <svg width="25" height="25"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2">
+                    <circle cx="12" cy="12" r="9"/>
+                    <path d="M9.5 9a2.5 2.5 0 1 1 4.4 1.6c-.9.9-1.9 1.3-1.9 2.4"/>
+                    <path d="M12 16.5h.01"/>
+                </svg>
+
+            </div>
+
+            <strong>Belajar sesuatu</strong>
+
+            <span>Jelaskan dengan sederhana</span>
+
+        </button>
+
+        <button class="quick-btn"
+                data-prompt="Bantu saya menulis teks yang profesional dan menarik.">
+
+            <div class="quick-icon">
+
+                <svg width="25" height="25"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2">
+                    <path d="M4 20h4L19 9l-4-4L4 16v4Z"/>
+                    <path d="m13.5 6.5 4 4"/>
+                </svg>
+
+            </div>
+
+            <strong>Buat tulisan</strong>
+
+            <span>Tulis dengan lebih profesional</span>
+
+        </button>
+
+    </div>
+
+</div>
+
+<div id="messages"></div>
+
+</div>
+
+</section>
+
+<!-- INPUT -->
+<div class="input-area">
+
+<div class="input-container">
+
+<div class="input-box">
+
+    <textarea
+        id="prompt"
+        rows="1"
+        placeholder="Tulis pesan untuk oneAi..."
+        autocomplete="off"></textarea>
+
+    <button class="send-btn"
+            id="sendBtn"
+            title="Kirim">
+
+        <svg width="19" height="19"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2">
+            <path d="m22 2-7 20-4-9-9-4Z"/>
+            <path d="M22 2 11 13"/>
+        </svg>
+
+    </button>
+
+</div>
+
+<div class="disclaimer">
+    oneAi dapat menghasilkan jawaban yang kurang akurat.
+    Periksa informasi penting.
+</div>
+
+</div>
+
+</div>
+
+</main>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   oneAi
+   Frontend
+   Developed by ONEDEV
+========================================================= */
+
+const $ = s => document.querySelector(s);
+
+const sidebar = $("#sidebar");
+const overlay = $("#overlay");
+const menuBtn = $("#menuBtn");
+const themeBtn = $("#themeBtn");
+const themeIcon = $("#themeIcon");
+
+const newChatBtn = $("#newChatBtn");
+
+const chat = $("#chat");
+const welcome = $("#welcome");
+const messages = $("#messages");
+
+const prompt = $("#prompt");
+const sendBtn = $("#sendBtn");
+
+const toast = $("#toast");
+
+let isGenerating = false;
+let currentChatId = null;
+let toastTimer = null;
+
+
+/* =========================================================
+   THEME
+========================================================= */
+
+function setMoon(){
+
+    themeIcon.innerHTML = `
+        <path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5
+        8.5 8.5 0 1 0 20.5 14.5Z"/>
+    `;
+
+}
+
+function setSun(){
+
+    themeIcon.innerHTML = `
+        <circle cx="12" cy="12" r="4"/>
+        <path d="
+        M12 2v2
+        M12 20v2
+        M4.93 4.93l1.41 1.41
+        M17.66 17.66l1.41 1.41
+        M2 12h2
+        M20 12h2
+        M4.93 19.07l1.41-1.41
+        M17.66 6.34l1.41-1.41"/>
+    `;
+
+}
+
+function loadTheme(){
+
+    const theme =
+        localStorage.getItem("oneai_theme");
+
+    if(theme === "light"){
+
+        document.body.classList.add("light");
+
+        setSun();
+
+    }else{
+
+        document.body.classList.remove("light");
+
+        setMoon();
+
+    }
+
+}
+
+themeBtn.addEventListener("click",()=>{
+
+    document.body.classList.toggle("light");
+
+    const light =
+        document.body.classList.contains("light");
+
+    localStorage.setItem(
+        "oneai_theme",
+        light ? "light" : "dark"
+    );
+
+    light ? setSun() : setMoon();
+
+});
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+menuBtn.addEventListener("click",()=>{
+
+    if(window.innerWidth <= 760){
+
+        sidebar.classList.toggle("open");
+
+        overlay.classList.toggle("show");
+
+    }else{
+
+        sidebar.classList.toggle("collapsed");
+
+    }
+
+});
+
+overlay.addEventListener("click",()=>{
+
+    sidebar.classList.remove("open");
+
+    overlay.classList.remove("show");
+
+});
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+function showToast(text){
+
+    toast.textContent = text;
+
+    toast.classList.add("show");
+
+    clearTimeout(toastTimer);
+
+    toastTimer = setTimeout(()=>{
+
+        toast.classList.remove("show");
+
+    },2200);
+
+}
+
+
+/* =========================================================
+   TEXTAREA
+========================================================= */
+
+function resizeTextarea(){
+
+    prompt.style.height = "auto";
+
+    prompt.style.height =
+        Math.min(prompt.scrollHeight,180) + "px";
+
+}
+
+prompt.addEventListener("input",resizeTextarea);
+
+prompt.addEventListener("keydown",e=>{
+
+    if(e.key === "Enter" && !e.shiftKey){
+
+        e.preventDefault();
+
+        sendMessage();
+
+    }
+
+});
+
+
+/* =========================================================
+   ESCAPE
+========================================================= */
+
+function escapeHtml(text){
+
+    return String(text)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================================================
+   MARKDOWN
+========================================================= */
+
+function renderMarkdown(text){
+
+    let html = escapeHtml(text);
+
+    html = html.replace(
+        /```([\w-]*)\n?([\s\S]*?)```/g,
+        (_,lang,code)=>{
+
+            const language =
+                lang || "code";
+
+            return `
+                <div class="code-wrap">
+
+                    <div class="code-head">
+
+                        <span>${language}</span>
+
+                        <button
+                            class="copy-code"
+                            data-code="${encodeURIComponent(code.trim())}">
+                            Copy
+                        </button>
+
+                    </div>
+
+                    <pre><code>${code.trim()}</code></pre>
+
+                </div>
+            `;
+
+        }
+    );
+
+    html = html.replace(
+        /\*\*(.*?)\*\*/g,
+        "<strong>$1</strong>"
+    );
+
+    html = html.replace(
+        /`([^`]+)`/g,
+        "<code>$1</code>"
+    );
+
+    html = html.replace(
+        /(https?:\/\/[^\s<]+)/g,
+        '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
+    );
+
+    const lines =
+        html.split("\n");
+
+    let output = "";
+    let inList = false;
+
+    for(const line of lines){
+
+        const trimmed =
+            line.trim();
+
+        if(!trimmed){
+
+            if(inList){
+
+                output += "</ul>";
+
+                inList = false;
+
+            }
+
+            continue;
+
+        }
+
+        if(/^[-*]\s+/.test(trimmed)){
+
+            if(!inList){
+
+                output += "<ul>";
+
+                inList = true;
+
+            }
+
+            output +=
+                "<li>" +
+                trimmed.replace(/^[-*]\s+/,"") +
+                "</li>";
+
+        }else{
+
+            if(inList){
+
+                output += "</ul>";
+
+                inList = false;
+
+            }
+
+            output +=
+                "<p>" +
+                trimmed +
+                "</p>";
+
+        }
+
+    }
+
+    if(inList){
+
+        output += "</ul>";
+
+    }
+
+    return output;
+
+}
+
+
+/* =========================================================
+   SCROLL
+========================================================= */
+
+function scrollBottom(){
+
+    requestAnimationFrame(()=>{
+
+        chat.scrollTop =
+            chat.scrollHeight;
+
+    });
+
+}
+
+
+/* =========================================================
+   USER MESSAGE
+========================================================= */
+
+function addUserMessage(text){
+
+    welcome.style.display = "none";
+
+    const el =
+        document.createElement("div");
+
+    el.className =
+        "message user";
+
+    el.innerHTML = `
+
+        <div class="message-content">
+
+            <div class="message-name">
+                You
+            </div>
+
+            <div class="bubble">
+                ${escapeHtml(text).replace(/\n/g,"<br>")}
+            </div>
+
+        </div>
+
+        <div class="avatar user-avatar">
+
+            <svg width="18" height="18"
+                 viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2">
+
+                <circle cx="12" cy="8" r="4"/>
+
+                <path d="
+                M4 21a8 8 0 0 1 16 0"/>
+
+            </svg>
+
+        </div>
+
+    `;
+
+    messages.appendChild(el);
+
+    scrollBottom();
+
+}
+
+
+/* =========================================================
+   AI MESSAGE
+========================================================= */
+
+function addAiMessage(text="",loading=false){
+
+    welcome.style.display = "none";
+
+    const el =
+        document.createElement("div");
+
+    el.className =
+        "message ai";
+
+    el.innerHTML = `
+
+        <div class="avatar">
+
+            <img src="logo.png"
+                 alt="oneAi">
+
+        </div>
+
+        <div class="message-content">
+
+            <div class="message-name">
+                oneAi
+            </div>
+
+            <div class="bubble" data-bubble>
+
+                ${
+                    loading
+                    ?
+                    `
+                    <div class="typing">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    `
+                    :
+                    renderMarkdown(text)
+                }
+
+            </div>
+
+        </div>
+
+    `;
+
+    messages.appendChild(el);
+
+    scrollBottom();
+
+    return el;
+
+}
+
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+
+function addActions(el,answer){
+
+    const content =
+        el.querySelector(".message-content");
+
+    const actions =
+        document.createElement("div");
+
+    actions.className =
+        "message-actions";
+
+    actions.innerHTML = `
+
+        <button class="action-btn copy-answer"
+                title="Salin">
+
+            <svg width="15" height="15"
+                 viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2">
+
+                <rect x="9" y="9"
+                      width="11"
+                      height="11"
+                      rx="2"/>
+
+                <path d="
+                M5 15H4
+                a2 2 0 0 1-2-2V4
+                a2 2 0 0 1 2-2h9
+                a2 2 0 0 1 2 2v1"/>
+
+            </svg>
+
+        </button>
+
+        <button class="action-btn regenerate"
+                title="Buat ulang">
+
+            <svg width="15" height="15"
+                 viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2">
+
+                <path d="
+                M20 11a8.1 8.1 0 0 0-15.5-2
+                M4 5v4h4"/>
+
+                <path d="
+                M4 13a8.1 8.1 0 0 0 15.5 2
+                M20 19v-4h-4"/>
+
+            </svg>
+
+        </button>
+
+    `;
+
+    content.appendChild(actions);
+
+    const copy =
+        actions.querySelector(".copy-answer");
+
+    copy.addEventListener("click",async()=>{
+
+        try{
+
+            await navigator.clipboard.writeText(answer);
+
+            showToast("Jawaban disalin");
+
+        }catch{
+
+            showToast("Gagal menyalin");
+
+        }
+
+    });
+
+    const regen =
+        actions.querySelector(".regenerate");
+
+    regen.addEventListener("click",()=>{
+
+        const last =
+            [...messages.querySelectorAll(".message.user")]
+            .pop();
+
+        if(!last) return;
+
+        const text =
+            last.querySelector(".bubble").innerText;
+
+        prompt.value = text;
+
+        resizeTextarea();
+
+        sendMessage();
+
+    });
+
+    el.querySelectorAll(".copy-code")
+        .forEach(btn=>{
+
+            btn.addEventListener("click",async()=>{
+
+                const code =
+                    decodeURIComponent(
+                        btn.dataset.code
+                    );
+
+                try{
+
+                    await navigator.clipboard
+                        .writeText(code);
+
+                    btn.textContent =
+                        "Copied";
+
+                    setTimeout(()=>{
+
+                        btn.textContent =
+                            "Copy";
+
+                    },1200);
+
+                }catch{
+
+                    showToast(
+                        "Gagal menyalin kode"
+                    );
+
+                }
+
+            });
+
+        });
+
+}
+
+
+/* =========================================================
+   SEND MESSAGE
+   IMPORTANT:
+   Backend api/ask.js menerima JSON
+========================================================= */
+
+async function sendMessage(){
+
+    if(isGenerating){
+
+        return;
+
+    }
+
+    const text =
+        prompt.value.trim();
+
+    if(!text){
+
+        prompt.focus();
+
+        return;
+
+    }
+
+    /* tampilkan pesan user */
+
+    addUserMessage(text);
+
+    /* kosongkan input */
+
+    prompt.value = "";
+
+    resizeTextarea();
+
+    /* status loading */
+
+    isGenerating = true;
+
+    sendBtn.disabled = true;
+
+    const aiEl =
+        addAiMessage("",true);
+
+    const bubble =
+        aiEl.querySelector("[data-bubble]");
+
+    try{
+
+        /*
+         * INI BAGIAN PENTING
+         *
+         * api/ask.js lu menggunakan:
+         *
+         * body.message
+         *
+         * Jadi frontend HARUS mengirim:
+         *
+         * JSON.stringify({
+         *     message: text
+         * })
+         */
+
+        const response =
+            await fetch("/api/ask",{
+
+                method:"POST",
+
+                headers:{
+                    "Content-Type":
+                        "application/json",
+
+                    "Accept":
+                        "application/json"
+                },
+
+                body:JSON.stringify({
+
+                    message:text
+
+                })
+
+            });
+
+        /* ambil response sebagai text dulu
+           supaya error HTML dari Vercel
+           gampang dideteksi */
+
+        const raw =
+            await response.text();
+
+        let data;
+
+        try{
+
+            data =
+                JSON.parse(raw);
+
+        }catch{
+
+            throw new Error(
+                "API tidak mengembalikan JSON. HTTP " +
+                response.status +
+                ": " +
+                raw.slice(0,250)
+            );
+
+        }
+
+        if(!response.ok){
+
+            throw new Error(
+                data.error ||
+                "API error HTTP " +
+                response.status
+            );
+
+        }
+
+        if(data.ok === false){
+
+            throw new Error(
+                data.error ||
+                "API gagal memproses pesan"
+            );
+
+        }
+
+        const answer =
+            data.response ||
+            data.answer ||
+            data.content ||
+            data.message ||
+            data.text ||
+            "";
+
+        if(!answer){
+
+            throw new Error(
+                "API berhasil dipanggil tetapi jawaban kosong."
+            );
+
+        }
+
+        /* tampilkan jawaban */
+
+        bubble.innerHTML =
+            renderMarkdown(answer);
+
+        /* tombol aksi */
+
+        addActions(
+            aiEl,
+            answer
+        );
+
+        /* simpan history */
+
+        saveHistory(text);
+
+        scrollBottom();
+
+    }catch(error){
+
+        console.error(
+            "oneAi frontend error:",
+            error
+        );
+
+        bubble.innerHTML = `
+
+            <p>
+                <strong>Gagal mendapatkan jawaban.</strong>
+            </p>
+
+            <p style="color:var(--muted)">
+                ${escapeHtml(
+                    error.message ||
+                    "Terjadi kesalahan."
+                )}
+            </p>
+
+        `;
+
+        showToast(
+            "Gagal menghubungi oneAi"
+        );
+
+    }finally{
+
+        isGenerating = false;
+
+        sendBtn.disabled = false;
+
+        prompt.focus();
+
+        scrollBottom();
+
+    }
+
+}
+
+
+/* =========================================================
+   SEND BUTTON
+========================================================= */
+
+sendBtn.addEventListener(
+    "click",
+    sendMessage
+);
+
+
+/* =========================================================
+   QUICK PROMPTS
+========================================================= */
+
+document
+.querySelectorAll(".quick-btn")
+.forEach(btn=>{
+
+    btn.addEventListener("click",()=>{
+
+        prompt.value =
+            btn.dataset.prompt;
+
+        resizeTextarea();
+
+        prompt.focus();
+
+    });
+
+});
+
+
+/* =========================================================
+   NEW CHAT
+========================================================= */
+
+newChatBtn.addEventListener(
+    "click",
+    newChat
+);
+
+function newChat(){
+
+    messages.innerHTML = "";
+
+    welcome.style.display =
+        "flex";
+
+    currentChatId = null;
+
+    prompt.value = "";
+
+    resizeTextarea();
+
+    if(window.innerWidth <= 760){
+
+        sidebar.classList.remove("open");
+
+        overlay.classList.remove("show");
+
+    }
+
+    prompt.focus();
+
+}
+
+
+/* =========================================================
+   HISTORY
+========================================================= */
+
+function getHistory(){
+
+    try{
+
+        return JSON.parse(
+            localStorage.getItem(
+                "oneai_history"
+            ) || "[]"
+        );
+
+    }catch{
+
+        return [];
+
+    }
+
+}
+
+function saveHistory(text){
+
+    const history =
+        getHistory();
+
+    history.unshift({
+
+        id:Date.now(),
+
+        title:text.slice(0,45),
+
+        text:text,
+
+        date:Date.now()
+
+    });
+
+    localStorage.setItem(
+        "oneai_history",
+        JSON.stringify(
+            history.slice(0,30)
+        )
+    );
+
+    loadHistory();
+
+}
+
+function loadHistory(){
+
+    const history =
+        getHistory();
+
+    const el =
+        document.querySelector(
+            "#history"
+        );
+
+    el.innerHTML = "";
+
+    if(!history.length){
+
+        el.innerHTML = `
+            <div class="history-empty">
+                Belum ada percakapan.
+            </div>
+        `;
+
+        return;
+
+    }
+
+    history.forEach(item=>{
+
+        const row =
+            document.createElement("div");
+
+        row.className =
+            "history-item";
+
+        row.innerHTML = `
+
+            <div class="history-icon">
+
+                <svg width="18" height="18"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2">
+
+                    <path d="
+                    M21 15
+                    a4 4 0 0 1-4 4H8
+                    l-5 3V7
+                    a4 4 0 0 1 4-4h10
+                    a4 4 0 0 1 4 4Z"/>
+
+                </svg>
+
+            </div>
+
+            <div class="history-name">
+                ${escapeHtml(item.title)}
+            </div>
+
+            <button class="history-delete"
+                    title="Hapus">
+
+                <svg width="15" height="15"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2">
+
+                    <path d="M3 6h18"/>
+
+                    <path d="
+                    M8 6V4h8v2"/>
+
+                    <path d="
+                    m19 6-1 15H6L5 6"/>
+
+                    <path d="
+                    M10 11v6
+                    M14 11v6"/>
+
+                </svg>
+
+            </button>
+
+        `;
+
+        row.addEventListener(
+            "click",
+            ()=>{
+                prompt.value =
+                    item.text;
+
+                resizeTextarea();
+
+                prompt.focus();
+
+                if(window.innerWidth <= 760){
+
+                    sidebar.classList.remove("open");
+
+                    overlay.classList.remove("show");
+
+                }
+            }
+        );
+
+        row.querySelector(
+            ".history-delete"
+        ).addEventListener(
+            "click",
+            e=>{
+
+                e.stopPropagation();
+
+                deleteHistory(item.id);
+
+            }
+        );
+
+        el.appendChild(row);
+
+    });
+
+}
+
+function deleteHistory(id){
+
+    const history =
+        getHistory()
+        .filter(
+            x => x.id !== id
+        );
+
+    localStorage.setItem(
+        "oneai_history",
+        JSON.stringify(history)
+    );
+
+    loadHistory();
+
+    showToast(
+        "Riwayat dihapus"
+    );
+
+}
+
+
+/* =========================================================
+   INIT
+========================================================= */
+
+loadTheme();
+
+loadHistory();
+
+resizeTextarea();
+
+setTimeout(()=>{
+
+    prompt.focus();
+
+},300);
+
+</script>
+
+</body>
+</html>
