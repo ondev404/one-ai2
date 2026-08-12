@@ -1,0 +1,3197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+
+<title>oneAi — AI Assistant</title>
+
+<meta name="theme-color" content="#09090b">
+<meta name="description" content="oneAi — AI Assistant by ONEDEV">
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+:root{
+    --bg:#09090b;
+    --bg2:#0f0f12;
+    --panel:#151518;
+    --panel2:#1c1c21;
+    --panel3:#232329;
+    --border:rgba(255,255,255,.085);
+    --border2:rgba(255,255,255,.13);
+    --text:#f4f4f5;
+    --muted:#92929b;
+    --muted2:#686871;
+    --hover:rgba(255,255,255,.065);
+    --accent:#ffffff;
+    --accentText:#09090b;
+    --danger:#ef4444;
+    --green:#22c55e;
+    --shadow:0 18px 60px rgba(0,0,0,.35);
+}
+
+body.light{
+    --bg:#f7f7f8;
+    --bg2:#ffffff;
+    --panel:#ffffff;
+    --panel2:#f0f0f2;
+    --panel3:#e7e7ea;
+    --border:rgba(0,0,0,.09);
+    --border2:rgba(0,0,0,.14);
+    --text:#18181b;
+    --muted:#71717a;
+    --muted2:#a1a1aa;
+    --hover:rgba(0,0,0,.055);
+    --accent:#18181b;
+    --accentText:#ffffff;
+    --shadow:0 18px 55px rgba(0,0,0,.12);
+}
+
+html,
+body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+    transition:
+        background .25s ease,
+        color .25s ease;
+}
+
+button,
+textarea{
+    font-family:inherit;
+}
+
+button{
+    -webkit-tap-highlight-color:transparent;
+}
+
+svg{
+    display:block;
+    stroke:currentColor;
+}
+
+.app{
+    width:100%;
+    height:100dvh;
+    display:flex;
+    overflow:hidden;
+    position:relative;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+
+.sidebar{
+    width:275px;
+    height:100%;
+    flex-shrink:0;
+    background:var(--bg2);
+    border-right:1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+    z-index:50;
+    transition:
+        transform .25s ease,
+        width .25s ease;
+}
+
+.sidebar-top{
+    padding:14px;
+}
+
+.new-chat{
+    width:100%;
+    height:45px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:9px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    background:var(--panel);
+    color:var(--text);
+    cursor:pointer;
+    font-size:13px;
+    font-weight:600;
+    transition:.18s;
+}
+
+.new-chat:hover{
+    background:var(--hover);
+}
+
+.new-chat svg{
+    width:18px;
+    height:18px;
+    stroke-width:2;
+}
+
+.sidebar-label{
+    padding:9px 17px 8px;
+    color:var(--muted2);
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+}
+
+.history{
+    flex:1;
+    overflow-y:auto;
+    padding:0 9px 10px;
+}
+
+.history::-webkit-scrollbar{
+    width:5px;
+}
+
+.history::-webkit-scrollbar-thumb{
+    background:var(--border2);
+    border-radius:10px;
+}
+
+.history-empty{
+    text-align:center;
+    color:var(--muted2);
+    font-size:12px;
+    padding:35px 15px;
+    line-height:1.6;
+}
+
+.history-item{
+    width:100%;
+    min-height:43px;
+    display:flex;
+    align-items:center;
+    gap:9px;
+    padding:9px 10px;
+    margin-bottom:3px;
+    border-radius:9px;
+    cursor:pointer;
+    color:var(--text);
+    transition:.15s;
+}
+
+.history-item:hover,
+.history-item.active{
+    background:var(--hover);
+}
+
+.history-icon{
+    color:var(--muted);
+    flex-shrink:0;
+}
+
+.history-icon svg{
+    width:17px;
+    height:17px;
+}
+
+.history-name{
+    flex:1;
+    min-width:0;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    font-size:12px;
+}
+
+.history-delete{
+    width:27px;
+    height:27px;
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:0;
+    border-radius:7px;
+    background:transparent;
+    color:var(--muted2);
+    cursor:pointer;
+    opacity:0;
+}
+
+.history-item:hover .history-delete{
+    opacity:1;
+}
+
+.history-delete:hover{
+    color:var(--danger);
+    background:rgba(239,68,68,.1);
+}
+
+.history-delete svg{
+    width:15px;
+    height:15px;
+}
+
+.sidebar-bottom{
+    padding:11px;
+    border-top:1px solid var(--border);
+}
+
+.profile{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:7px;
+}
+
+.profile-logo{
+    width:36px;
+    height:36px;
+    flex-shrink:0;
+    border-radius:10px;
+    object-fit:cover;
+    background:var(--panel2);
+}
+
+.profile-name{
+    min-width:0;
+}
+
+.profile-name strong{
+    display:block;
+    font-size:13px;
+}
+
+.profile-name span{
+    display:block;
+    margin-top:2px;
+    color:var(--muted);
+    font-size:10px;
+}
+
+/* =========================
+   MAIN
+========================= */
+
+.main{
+    flex:1;
+    min-width:0;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    background:var(--bg);
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.header{
+    height:64px;
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 16px;
+    border-bottom:1px solid var(--border);
+    background:var(--bg);
+    z-index:20;
+}
+
+.header-left,
+.header-right{
+    display:flex;
+    align-items:center;
+    gap:7px;
+}
+
+.menu-btn,
+.header-btn{
+    width:39px;
+    height:39px;
+    border:0;
+    border-radius:10px;
+    background:transparent;
+    color:var(--text);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:.18s;
+}
+
+.menu-btn:hover,
+.header-btn:hover{
+    background:var(--hover);
+}
+
+.menu-btn svg,
+.header-btn svg{
+    width:19px;
+    height:19px;
+    stroke-width:2;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    margin-left:2px;
+}
+
+.brand-logo{
+    width:33px;
+    height:33px;
+    object-fit:cover;
+    border-radius:9px;
+    background:var(--panel2);
+}
+
+.brand-info{
+    line-height:1.1;
+}
+
+.brand-name{
+    font-size:15px;
+    font-weight:700;
+    letter-spacing:-.02em;
+}
+
+.brand-status{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    color:var(--muted);
+    font-size:9px;
+    margin-top:4px;
+}
+
+.status-dot{
+    width:5px;
+    height:5px;
+    border-radius:50%;
+    background:var(--green);
+}
+
+/* =========================
+   CHAT
+========================= */
+
+.chat{
+    flex:1;
+    overflow-y:auto;
+    scroll-behavior:smooth;
+}
+
+.chat::-webkit-scrollbar{
+    width:6px;
+}
+
+.chat::-webkit-scrollbar-thumb{
+    background:var(--border);
+    border-radius:10px;
+}
+
+.chat-inner{
+    width:min(850px,100%);
+    margin:0 auto;
+    padding:35px 22px 145px;
+}
+
+/* =========================
+   WELCOME
+========================= */
+
+.welcome{
+    min-height:calc(100dvh - 215px);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:25px 0;
+}
+
+.welcome-logo{
+    width:70px;
+    height:70px;
+    border-radius:19px;
+    object-fit:cover;
+    background:var(--panel2);
+    box-shadow:var(--shadow);
+    margin-bottom:20px;
+}
+
+.welcome h1{
+    font-size:29px;
+    line-height:1.15;
+    letter-spacing:-.04em;
+    margin-bottom:10px;
+}
+
+.welcome p{
+    max-width:500px;
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.7;
+}
+
+.quick-actions{
+    width:min(600px,100%);
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:9px;
+    margin-top:27px;
+}
+
+.quick-btn{
+    min-height:72px;
+    padding:13px;
+    text-align:left;
+    border:1px solid var(--border);
+    border-radius:13px;
+    background:var(--panel);
+    color:var(--text);
+    cursor:pointer;
+    transition:.18s;
+}
+
+.quick-btn:hover{
+    background:var(--hover);
+    transform:translateY(-1px);
+}
+
+.quick-icon{
+    width:27px;
+    height:27px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--muted);
+    margin-bottom:5px;
+}
+
+.quick-icon svg{
+    width:18px;
+    height:18px;
+}
+
+.quick-btn strong{
+    display:block;
+    font-size:12px;
+}
+
+.quick-btn span{
+    display:block;
+    margin-top:3px;
+    color:var(--muted);
+    font-size:10px;
+}
+
+/* =========================
+   MESSAGE
+========================= */
+
+.message{
+    display:flex;
+    gap:12px;
+    margin-bottom:28px;
+    animation:messageIn .22s ease;
+}
+
+@keyframes messageIn{
+    from{
+        opacity:0;
+        transform:translateY(5px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.message.user{
+    justify-content:flex-end;
+}
+
+.message.user .message-content{
+    max-width:76%;
+}
+
+.message.ai .message-content{
+    flex:1;
+    min-width:0;
+}
+
+.avatar{
+    width:34px;
+    height:34px;
+    flex-shrink:0;
+    border-radius:10px;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:var(--panel2);
+    color:var(--muted);
+}
+
+.avatar img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.user-avatar svg{
+    width:17px;
+    height:17px;
+}
+
+.message-name{
+    color:var(--muted);
+    font-size:10px;
+    font-weight:600;
+    margin-bottom:6px;
+}
+
+.user .message-name{
+    text-align:right;
+}
+
+.bubble{
+    font-size:14px;
+    line-height:1.72;
+    word-break:break-word;
+}
+
+.user .bubble{
+    padding:11px 14px;
+    background:var(--panel2);
+    border:1px solid var(--border);
+    border-radius:17px 17px 5px 17px;
+}
+
+.ai .bubble{
+    padding:0;
+}
+
+.bubble p{
+    margin-bottom:11px;
+}
+
+.bubble p:last-child{
+    margin-bottom:0;
+}
+
+.bubble strong{
+    font-weight:700;
+}
+
+.bubble em{
+    font-style:italic;
+}
+
+.bubble ul,
+.bubble ol{
+    margin:10px 0;
+    padding-left:22px;
+}
+
+.bubble li{
+    margin:4px 0;
+}
+
+.bubble a{
+    color:inherit;
+    text-decoration:underline;
+    text-underline-offset:2px;
+}
+
+.bubble code{
+    padding:2px 5px;
+    border:1px solid var(--border);
+    border-radius:5px;
+    background:var(--panel2);
+    font-family:
+        ui-monospace,
+        SFMono-Regular,
+        Menlo,
+        Monaco,
+        Consolas,
+        monospace;
+    font-size:12px;
+}
+
+/* =========================
+   CODE
+========================= */
+
+.code-wrap{
+    margin:14px 0;
+    overflow:hidden;
+    border:1px solid var(--border);
+    border-radius:12px;
+    background:#0a0a0d;
+}
+
+.code-head{
+    height:35px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 10px 0 13px;
+    border-bottom:1px solid rgba(255,255,255,.07);
+    background:rgba(255,255,255,.035);
+    color:#92929b;
+    font-size:10px;
+}
+
+.copy-code{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    height:27px;
+    padding:0 7px;
+    border:0;
+    border-radius:6px;
+    background:transparent;
+    color:#92929b;
+    cursor:pointer;
+    font-size:10px;
+}
+
+.copy-code:hover{
+    background:rgba(255,255,255,.07);
+    color:#fff;
+}
+
+.copy-code svg{
+    width:13px;
+    height:13px;
+}
+
+.code-wrap pre{
+    margin:0;
+    padding:14px;
+    overflow-x:auto;
+}
+
+.code-wrap pre::-webkit-scrollbar{
+    height:5px;
+}
+
+.code-wrap pre::-webkit-scrollbar-thumb{
+    background:#29292e;
+    border-radius:10px;
+}
+
+.code-wrap pre code{
+    padding:0;
+    border:0;
+    background:none;
+    color:#e4e4e7;
+    font-size:12px;
+    line-height:1.65;
+}
+
+/* =========================
+   ACTIONS
+========================= */
+
+.message-actions{
+    display:flex;
+    align-items:center;
+    gap:2px;
+    margin-top:7px;
+}
+
+.action-btn{
+    width:30px;
+    height:30px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:0;
+    border-radius:8px;
+    background:transparent;
+    color:var(--muted);
+    cursor:pointer;
+    transition:.15s;
+}
+
+.action-btn:hover{
+    background:var(--hover);
+    color:var(--text);
+}
+
+.action-btn svg{
+    width:15px;
+    height:15px;
+}
+
+/* =========================
+   TYPING
+========================= */
+
+.typing{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    height:25px;
+}
+
+.typing span{
+    width:5px;
+    height:5px;
+    border-radius:50%;
+    background:var(--muted);
+    animation:typing 1.1s infinite;
+}
+
+.typing span:nth-child(2){
+    animation-delay:.15s;
+}
+
+.typing span:nth-child(3){
+    animation-delay:.3s;
+}
+
+@keyframes typing{
+    0%,60%,100%{
+        transform:translateY(0);
+        opacity:.3;
+    }
+    30%{
+        transform:translateY(-4px);
+        opacity:1;
+    }
+}
+
+/* =========================
+   INPUT
+========================= */
+
+.input-area{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    padding:15px 20px 17px;
+    background:
+        linear-gradient(
+            to bottom,
+            transparent,
+            var(--bg) 25%
+        );
+    z-index:10;
+}
+
+.input-container{
+    width:min(850px,100%);
+    margin:0 auto;
+}
+
+.attach-preview{
+    display:none;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-bottom:7px;
+}
+
+.file-chip{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    max-width:240px;
+    padding:7px 9px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    background:var(--panel);
+    color:var(--muted);
+    font-size:10px;
+}
+
+.file-chip span{
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+.file-remove{
+    width:20px;
+    height:20px;
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:0;
+    background:transparent;
+    color:var(--muted);
+    cursor:pointer;
+}
+
+.file-remove svg{
+    width:13px;
+    height:13px;
+}
+
+.input-box{
+    min-height:57px;
+    display:flex;
+    align-items:flex-end;
+    gap:6px;
+    padding:7px;
+    border:1px solid var(--border2);
+    border-radius:17px;
+    background:var(--panel);
+    box-shadow:var(--shadow);
+    transition:.2s;
+}
+
+.input-box:focus-within{
+    border-color:rgba(255,255,255,.2);
+}
+
+body.light .input-box:focus-within{
+    border-color:rgba(0,0,0,.2);
+}
+
+.input-btn,
+.send-btn{
+    width:40px;
+    height:40px;
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:11px;
+    cursor:pointer;
+}
+
+.input-btn{
+    border:0;
+    background:transparent;
+    color:var(--muted);
+}
+
+.input-btn:hover{
+    background:var(--hover);
+    color:var(--text);
+}
+
+.input-btn svg{
+    width:19px;
+    height:19px;
+}
+
+textarea{
+    flex:1;
+    min-width:0;
+    width:100%;
+    min-height:40px;
+    max-height:170px;
+    resize:none;
+    outline:none;
+    border:0;
+    background:transparent;
+    color:var(--text);
+    padding:9px 3px;
+    font-size:14px;
+    line-height:1.5;
+}
+
+textarea::placeholder{
+    color:var(--muted2);
+}
+
+.send-btn{
+    border:0;
+    background:var(--accent);
+    color:var(--accentText);
+    transition:.15s;
+}
+
+.send-btn:hover{
+    transform:scale(1.04);
+}
+
+.send-btn:disabled{
+    opacity:.4;
+    cursor:not-allowed;
+    transform:none;
+}
+
+.send-btn svg{
+    width:18px;
+    height:18px;
+}
+
+.disclaimer{
+    text-align:center;
+    color:var(--muted2);
+    font-size:9px;
+    margin-top:7px;
+}
+
+/* =========================
+   TOAST
+========================= */
+
+.toast{
+    position:fixed;
+    left:50%;
+    bottom:84px;
+    z-index:100;
+    transform:translate(-50%,15px);
+    padding:9px 13px;
+    border:1px solid var(--border);
+    border-radius:9px;
+    background:#18181b;
+    color:#fff;
+    font-size:11px;
+    opacity:0;
+    pointer-events:none;
+    transition:.2s;
+}
+
+.toast.show{
+    opacity:1;
+    transform:translate(-50%,0);
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:760px){
+
+    .sidebar{
+        position:fixed;
+        left:0;
+        top:0;
+        bottom:0;
+        width:280px;
+        transform:translateX(-100%);
+        box-shadow:20px 0 55px rgba(0,0,0,.35);
+    }
+
+    .sidebar.open{
+        transform:translateX(0);
+    }
+
+    .overlay{
+        position:fixed;
+        inset:0;
+        z-index:40;
+        display:none;
+        background:rgba(0,0,0,.55);
+    }
+
+    .overlay.show{
+        display:block;
+    }
+
+    .header{
+        height:61px;
+        padding:0 9px;
+    }
+
+    .brand-logo{
+        width:31px;
+        height:31px;
+    }
+
+    .brand-name{
+        font-size:14px;
+    }
+
+    .brand-status{
+        display:none;
+    }
+
+    .chat-inner{
+        padding:27px 14px 135px;
+    }
+
+    .welcome{
+        min-height:calc(100dvh - 205px);
+    }
+
+    .welcome-logo{
+        width:62px;
+        height:62px;
+    }
+
+    .welcome h1{
+        font-size:25px;
+    }
+
+    .welcome p{
+        font-size:12px;
+    }
+
+    .quick-actions{
+        grid-template-columns:1fr;
+        margin-top:21px;
+    }
+
+    .quick-btn{
+        min-height:65px;
+    }
+
+    .message{
+        gap:8px;
+        margin-bottom:24px;
+    }
+
+    .avatar{
+        width:30px;
+        height:30px;
+        border-radius:9px;
+    }
+
+    .message.user .message-content{
+        max-width:86%;
+    }
+
+    .bubble{
+        font-size:13px;
+    }
+
+    .input-area{
+        padding:9px 9px 11px;
+    }
+
+    .input-box{
+        min-height:53px;
+        border-radius:15px;
+    }
+
+    .input-btn,
+    .send-btn{
+        width:38px;
+        height:38px;
+    }
+
+    .disclaimer{
+        font-size:8px;
+    }
+
+    .history-delete{
+        opacity:1;
+    }
+}
+
+/* =========================
+   ACCESSIBILITY
+========================= */
+
+@media(prefers-reduced-motion:reduce){
+
+    *,
+    *::before,
+    *::after{
+        animation:none!important;
+        transition:none!important;
+        scroll-behavior:auto!important;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="sidebar-top">
+
+            <button class="new-chat" id="newChatBtn" type="button">
+
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14"/>
+                    <path d="M5 12h14"/>
+                </svg>
+
+                <span>Chat baru</span>
+
+            </button>
+
+        </div>
+
+        <div class="sidebar-label">
+            Riwayat percakapan
+        </div>
+
+        <div class="history" id="history">
+
+            <div class="history-empty" id="historyEmpty">
+                Belum ada percakapan.
+            </div>
+
+        </div>
+
+        <div class="sidebar-bottom">
+
+            <div class="profile">
+
+                <img
+                    src="logo.png"
+                    class="profile-logo"
+                    alt="oneAi"
+                >
+
+                <div class="profile-name">
+
+                    <strong>oneAi</strong>
+
+                    <span>
+                        Developed by ONEDEV
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <div class="overlay" id="overlay"></div>
+
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <!-- HEADER -->
+        <header class="header">
+
+            <div class="header-left">
+
+                <button
+                    class="menu-btn"
+                    id="menuBtn"
+                    type="button"
+                    aria-label="Buka menu"
+                    title="Menu"
+                >
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+                        <path d="M4 6h16"/>
+                        <path d="M4 12h16"/>
+                        <path d="M4 18h16"/>
+                    </svg>
+
+                </button>
+
+
+                <div class="brand">
+
+                    <img
+                        src="logo.png"
+                        class="brand-logo"
+                        alt="oneAi"
+                    >
+
+                    <div class="brand-info">
+
+                        <div class="brand-name">
+                            oneAi
+                        </div>
+
+                        <div class="brand-status">
+
+                            <span class="status-dot"></span>
+
+                            Online
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="header-right">
+
+                <button
+                    class="header-btn"
+                    id="themeBtn"
+                    type="button"
+                    aria-label="Ganti tema"
+                    title="Ganti tema"
+                >
+
+                    <svg
+                        id="themeIcon"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    ></svg>
+
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- CHAT -->
+        <section class="chat" id="chat">
+
+            <div class="chat-inner">
+
+                <!-- WELCOME -->
+                <div class="welcome" id="welcome">
+
+                    <img
+                        src="logo.png"
+                        class="welcome-logo"
+                        alt="oneAi"
+                    >
+
+                    <h1>
+                        Ada yang bisa saya bantu?
+                    </h1>
+
+                    <p>
+                        Tanya apa saja kepada oneAi.
+                        Mulai dari coding, ide, belajar,
+                        menulis, sampai berbagai kebutuhan lainnya.
+                    </p>
+
+
+                    <div class="quick-actions">
+
+                        <button
+                            class="quick-btn"
+                            type="button"
+                            data-prompt="Bantu saya membuat website modern menggunakan HTML, CSS, dan JavaScript."
+                        >
+
+                            <div class="quick-icon">
+
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                >
+                                    <path d="M4 5h16v14H4z"/>
+                                    <path d="m8 9 3 3-3 3"/>
+                                    <path d="M13 15h3"/>
+                                </svg>
+
+                            </div>
+
+                            <strong>
+                                Bantu coding
+                            </strong>
+
+                            <span>
+                                Buat atau perbaiki kode
+                            </span>
+
+                        </button>
+
+
+                        <button
+                            class="quick-btn"
+                            type="button"
+                            data-prompt="Berikan saya beberapa ide kreatif yang menarik dan bisa saya kerjakan."
+                        >
+
+                            <div class="quick-icon">
+
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                >
+                                    <path d="M9 18h6"/>
+                                    <path d="M10 22h4"/>
+                                    <path d="M8.5 14.5A7 7 0 1 1 15.5 14.5C14.6 15.3 14 16.2 14 17H10c0-.8-.6-1.7-1.5-2.5Z"/>
+                                </svg>
+
+                            </div>
+
+                            <strong>
+                                Cari ide
+                            </strong>
+
+                            <span>
+                                Dapatkan inspirasi baru
+                            </span>
+
+                        </button>
+
+
+                        <button
+                            class="quick-btn"
+                            type="button"
+                            data-prompt="Jelaskan konsep pemrograman yang sulit dengan bahasa sederhana dan mudah dipahami."
+                        >
+
+                            <div class="quick-icon">
+
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                >
+                                    <circle cx="12" cy="12" r="9"/>
+                                    <path d="M9.5 9a2.5 2.5 0 1 1 4.4 1.6c-.9.9-1.9 1.3-1.9 2.4"/>
+                                    <path d="M12 16.5h.01"/>
+                                </svg>
+
+                            </div>
+
+                            <strong>
+                                Belajar sesuatu
+                            </strong>
+
+                            <span>
+                                Jelaskan dengan sederhana
+                            </span>
+
+                        </button>
+
+
+                        <button
+                            class="quick-btn"
+                            type="button"
+                            data-prompt="Bantu saya menulis teks yang profesional, menarik, dan enak dibaca."
+                        >
+
+                            <div class="quick-icon">
+
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                >
+                                    <path d="M4 20h4L19 9l-4-4L4 16v4Z"/>
+                                    <path d="m13.5 6.5 4 4"/>
+                                </svg>
+
+                            </div>
+
+                            <strong>
+                                Buat tulisan
+                            </strong>
+
+                            <span>
+                                Tulis lebih profesional
+                            </span>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- MESSAGES -->
+                <div id="messages"></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- INPUT -->
+        <div class="input-area">
+
+            <div class="input-container">
+
+                <div
+                    class="attach-preview"
+                    id="attachPreview"
+                ></div>
+
+
+                <div class="input-box">
+
+                    <textarea
+                        id="prompt"
+                        rows="1"
+                        maxlength="8000"
+                        placeholder="Tulis pesan untuk oneAi..."
+                        autocomplete="off"
+                        spellcheck="true"
+                    ></textarea>
+
+
+                    <button
+                        class="send-btn"
+                        id="sendBtn"
+                        type="button"
+                        title="Kirim"
+                        aria-label="Kirim"
+                    >
+
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <path d="m22 2-7 20-4-9-9-4Z"/>
+                            <path d="M22 2 11 13"/>
+                        </svg>
+
+                    </button>
+
+                </div>
+
+
+                <div class="disclaimer">
+                    oneAi dapat menghasilkan jawaban yang kurang akurat.
+                    Periksa informasi penting sebelum digunakan.
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<div
+    class="toast"
+    id="toast"
+></div>
+
+
+<script>
+/* =========================================================
+   oneAi
+   AI Assistant
+   Developed by ONEDEV
+========================================================= */
+
+const $ = selector =>
+    document.querySelector(selector);
+
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const sidebar =
+    $("#sidebar");
+
+const overlay =
+    $("#overlay");
+
+const menuBtn =
+    $("#menuBtn");
+
+const themeBtn =
+    $("#themeBtn");
+
+const themeIcon =
+    $("#themeIcon");
+
+const newChatBtn =
+    $("#newChatBtn");
+
+const historyEl =
+    $("#history");
+
+const chat =
+    $("#chat");
+
+const welcome =
+    $("#welcome");
+
+const messages =
+    $("#messages");
+
+const prompt =
+    $("#prompt");
+
+const sendBtn =
+    $("#sendBtn");
+
+const toast =
+    $("#toast");
+
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let currentChatId = null;
+
+let isGenerating = false;
+
+let toastTimer = null;
+
+
+/* =========================================================
+   THEME
+========================================================= */
+
+function setMoonIcon(){
+
+    themeIcon.innerHTML = `
+        <path
+            d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5
+               8.5 8.5 0 1 0 20.5 14.5Z"
+        />
+    `;
+
+}
+
+function setSunIcon(){
+
+    themeIcon.innerHTML = `
+        <circle cx="12" cy="12" r="4"/>
+
+        <path d="
+            M12 2v2
+            M12 20v2
+            M4.93 4.93l1.41 1.41
+            M17.66 17.66l1.41 1.41
+            M2 12h2
+            M20 12h2
+            M4.93 19.07l1.41-1.41
+            M17.66 6.34l1.41-1.41
+        "/>
+    `;
+
+}
+
+function loadTheme(){
+
+    const theme =
+        localStorage.getItem(
+            "oneai_theme"
+        );
+
+    if(theme === "light"){
+
+        document.body.classList.add("light");
+
+        setSunIcon();
+
+    }else{
+
+        document.body.classList.remove("light");
+
+        setMoonIcon();
+
+    }
+
+}
+
+themeBtn.addEventListener(
+    "click",
+    () => {
+
+        const isLight =
+            document.body.classList.toggle(
+                "light"
+            );
+
+        localStorage.setItem(
+            "oneai_theme",
+            isLight
+                ? "light"
+                : "dark"
+        );
+
+        if(isLight){
+            setSunIcon();
+        }else{
+            setMoonIcon();
+        }
+
+    }
+);
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+function openSidebar(){
+
+    sidebar.classList.add("open");
+
+    overlay.classList.add("show");
+
+}
+
+function closeSidebar(){
+
+    sidebar.classList.remove("open");
+
+    overlay.classList.remove("show");
+
+}
+
+menuBtn.addEventListener(
+    "click",
+    () => {
+
+        if(
+            window.innerWidth <= 760
+        ){
+
+            if(
+                sidebar.classList.contains(
+                    "open"
+                )
+            ){
+
+                closeSidebar();
+
+            }else{
+
+                openSidebar();
+
+            }
+
+        }
+
+    }
+);
+
+overlay.addEventListener(
+    "click",
+    closeSidebar
+);
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+function showToast(text){
+
+    toast.textContent =
+        text;
+
+    toast.classList.add(
+        "show"
+    );
+
+    clearTimeout(
+        toastTimer
+    );
+
+    toastTimer =
+        setTimeout(
+            () => {
+
+                toast.classList.remove(
+                    "show"
+                );
+
+            },
+            2200
+        );
+
+}
+
+
+/* =========================================================
+   TEXTAREA
+========================================================= */
+
+function resizeTextarea(){
+
+    prompt.style.height =
+        "auto";
+
+    prompt.style.height =
+        Math.min(
+            prompt.scrollHeight,
+            170
+        ) + "px";
+
+}
+
+prompt.addEventListener(
+    "input",
+    resizeTextarea
+);
+
+prompt.addEventListener(
+    "keydown",
+    event => {
+
+        if(
+            event.key === "Enter" &&
+            !event.shiftKey
+        ){
+
+            event.preventDefault();
+
+            sendMessage();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHtml(text){
+
+    return String(text)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =========================================================
+   MARKDOWN
+========================================================= */
+
+function renderMarkdown(text){
+
+    if(!text){
+
+        return "";
+
+    }
+
+    let html =
+        escapeHtml(text);
+
+
+    /*
+     * CODE BLOCK
+     */
+
+    html =
+        html.replace(
+            /```([\w-]*)\n?([\s\S]*?)```/g,
+            function(
+                match,
+                language,
+                code
+            ){
+
+                const lang =
+                    language ||
+                    "code";
+
+                const cleanCode =
+                    code.trim();
+
+                return `
+                    <div class="code-wrap">
+
+                        <div class="code-head">
+
+                            <span>
+                                ${escapeHtml(lang)}
+                            </span>
+
+                            <button
+                                class="copy-code"
+                                type="button"
+                                data-code="${encodeURIComponent(cleanCode)}"
+                            >
+
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                >
+                                    <rect
+                                        x="9"
+                                        y="9"
+                                        width="11"
+                                        height="11"
+                                        rx="2"
+                                    />
+
+                                    <path
+                                        d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                                    />
+                                </svg>
+
+                                Copy
+
+                            </button>
+
+                        </div>
+
+                        <pre><code>${cleanCode}</code></pre>
+
+                    </div>
+                `;
+
+            }
+        );
+
+
+    /*
+     * INLINE CODE
+     */
+
+    html =
+        html.replace(
+            /`([^`]+)`/g,
+            "<code>$1</code>"
+        );
+
+
+    /*
+     * BOLD
+     */
+
+    html =
+        html.replace(
+            /\*\*(.*?)\*\*/g,
+            "<strong>$1</strong>"
+        );
+
+
+    /*
+     * ITALIC
+     */
+
+    html =
+        html.replace(
+            /(?<!\*)\*([^*]+)\*(?!\*)/g,
+            "<em>$1</em>"
+        );
+
+
+    /*
+     * LINKS
+     */
+
+    html =
+        html.replace(
+            /(https?:\/\/[^\s<]+)/g,
+            '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
+        );
+
+
+    /*
+     * LINES
+     */
+
+    const lines =
+        html.split("\n");
+
+    let output = "";
+
+    let listOpen = false;
+
+
+    for(
+        const line of lines
+    ){
+
+        const trimmed =
+            line.trim();
+
+
+        if(!trimmed){
+
+            if(listOpen){
+
+                output +=
+                    "</ul>";
+
+                listOpen =
+                    false;
+
+            }
+
+            continue;
+
+        }
+
+
+        /*
+         * BULLET
+         */
+
+        if(
+            /^[-*]\s+/.test(
+                trimmed
+            )
+        ){
+
+            if(!listOpen){
+
+                output +=
+                    "<ul>";
+
+                listOpen =
+                    true;
+
+            }
+
+            output +=
+                "<li>" +
+                trimmed.replace(
+                    /^[-*]\s+/,
+                    ""
+                ) +
+                "</li>";
+
+            continue;
+
+        }
+
+
+        if(listOpen){
+
+            output +=
+                "</ul>";
+
+            listOpen =
+                false;
+
+        }
+
+
+        /*
+         * NUMBERED LIST
+         */
+
+        if(
+            /^\d+\.\s+/.test(
+                trimmed
+            )
+        ){
+
+            output +=
+                "<p>" +
+                trimmed +
+                "</p>";
+
+            continue;
+
+        }
+
+
+        output +=
+            "<p>" +
+            trimmed +
+            "</p>";
+
+    }
+
+
+    if(listOpen){
+
+        output +=
+            "</ul>";
+
+    }
+
+
+    return output;
+
+}
+
+
+/* =========================================================
+   SCROLL
+========================================================= */
+
+function scrollBottom(){
+
+    requestAnimationFrame(
+        () => {
+
+            chat.scrollTop =
+                chat.scrollHeight;
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   USER MESSAGE
+========================================================= */
+
+function addUserMessage(
+    text
+){
+
+    welcome.style.display =
+        "none";
+
+
+    const el =
+        document.createElement(
+            "div"
+        );
+
+    el.className =
+        "message user";
+
+
+    el.innerHTML = `
+
+        <div class="message-content">
+
+            <div class="message-name">
+                You
+            </div>
+
+            <div class="bubble">
+                ${escapeHtml(text)
+                    .replace(
+                        /\n/g,
+                        "<br>"
+                    )}
+            </div>
+
+        </div>
+
+
+        <div class="avatar user-avatar">
+
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+
+                <circle
+                    cx="12"
+                    cy="8"
+                    r="4"
+                />
+
+                <path
+                    d="M4 21a8 8 0 0 1 16 0"
+                />
+
+            </svg>
+
+        </div>
+
+    `;
+
+
+    messages.appendChild(
+        el
+    );
+
+    scrollBottom();
+
+}
+
+
+/* =========================================================
+   AI MESSAGE
+========================================================= */
+
+function addAiMessage(
+    content = "",
+    loading = false
+){
+
+    welcome.style.display =
+        "none";
+
+
+    const el =
+        document.createElement(
+            "div"
+        );
+
+    el.className =
+        "message ai";
+
+
+    el.innerHTML = `
+
+        <div class="avatar">
+
+            <img
+                src="logo.png"
+                alt="oneAi"
+            >
+
+        </div>
+
+
+        <div class="message-content">
+
+            <div class="message-name">
+                oneAi
+            </div>
+
+            <div
+                class="bubble"
+                data-bubble
+            >
+
+                ${
+                    loading
+                    ?
+                    `
+                    <div class="typing">
+
+                        <span></span>
+                        <span></span>
+                        <span></span>
+
+                    </div>
+                    `
+                    :
+                    renderMarkdown(
+                        content
+                    )
+                }
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    messages.appendChild(
+        el
+    );
+
+    scrollBottom();
+
+
+    if(!loading){
+
+        addActions(
+            el
+        );
+
+    }
+
+
+    return el;
+
+}
+
+
+/* =========================================================
+   MESSAGE ACTIONS
+========================================================= */
+
+function addActions(
+    messageElement
+){
+
+    const old =
+        messageElement.querySelector(
+            ".message-actions"
+        );
+
+    if(old){
+
+        old.remove();
+
+    }
+
+
+    const actions =
+        document.createElement(
+            "div"
+        );
+
+    actions.className =
+        "message-actions";
+
+
+    actions.innerHTML = `
+
+        <button
+            class="action-btn copy-answer"
+            type="button"
+            title="Salin jawaban"
+        >
+
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+
+                <rect
+                    x="9"
+                    y="9"
+                    width="11"
+                    height="11"
+                    rx="2"
+                />
+
+                <path
+                    d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                />
+
+            </svg>
+
+        </button>
+
+
+        <button
+            class="action-btn regenerate"
+            type="button"
+            title="Buat ulang"
+        >
+
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+
+                <path
+                    d="M20 11a8.1 8.1 0 0 0-15.5-2M4 5v4h4"
+                />
+
+                <path
+                    d="M4 13a8.1 8.1 0 0 0 15.5 2M20 19v-4h-4"
+                />
+
+            </svg>
+
+        </button>
+
+    `;
+
+
+    messageElement
+        .querySelector(
+            ".message-content"
+        )
+        .appendChild(
+            actions
+        );
+
+
+    const copyBtn =
+        actions.querySelector(
+            ".copy-answer"
+        );
+
+
+    copyBtn.addEventListener(
+        "click",
+        async () => {
+
+            const bubble =
+                messageElement.querySelector(
+                    ".bubble"
+                );
+
+            try{
+
+                await navigator.clipboard.writeText(
+                    bubble.innerText
+                );
+
+                showToast(
+                    "Jawaban disalin"
+                );
+
+            }catch{
+
+                showToast(
+                    "Gagal menyalin"
+                );
+
+            }
+
+        }
+    );
+
+
+    const regenBtn =
+        actions.querySelector(
+            ".regenerate"
+        );
+
+
+    regenBtn.addEventListener(
+        "click",
+        () => {
+
+            const users =
+                messages.querySelectorAll(
+                    ".message.user"
+                );
+
+            const last =
+                users[users.length - 1];
+
+            if(!last) return;
+
+
+            const bubble =
+                last.querySelector(
+                    ".bubble"
+                );
+
+            if(!bubble) return;
+
+
+            const text =
+                bubble.innerText.trim();
+
+
+            if(!text) return;
+
+
+            prompt.value =
+                text;
+
+            resizeTextarea();
+
+            sendMessage();
+
+        }
+    );
+
+
+    /*
+     * COPY CODE
+     */
+
+    messageElement
+        .querySelectorAll(
+            ".copy-code"
+        )
+        .forEach(
+            btn => {
+
+                btn.addEventListener(
+                    "click",
+                    async () => {
+
+                        const code =
+                            decodeURIComponent(
+                                btn.dataset.code
+                            );
+
+                        try{
+
+                            await navigator.clipboard.writeText(
+                                code
+                            );
+
+                            btn.innerHTML =
+                                "Copied";
+
+                            setTimeout(
+                                () => {
+
+                                    btn.innerHTML = `
+
+                                        <svg
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2"
+                                        >
+
+                                            <rect
+                                                x="9"
+                                                y="9"
+                                                width="11"
+                                                height="11"
+                                                rx="2"
+                                            />
+
+                                            <path
+                                                d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                                            />
+
+                                        </svg>
+
+                                        Copy
+                                    `;
+
+                                },
+                                1200
+                            );
+
+                        }catch{
+
+                            showToast(
+                                "Gagal menyalin kode"
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   SEND MESSAGE
+========================================================= */
+
+async function sendMessage(){
+
+    if(isGenerating){
+
+        return;
+
+    }
+
+
+    const text =
+        prompt.value.trim();
+
+
+    if(!text){
+
+        prompt.focus();
+
+        return;
+
+    }
+
+
+    /*
+     * Maksimum sama seperti api/ask.js
+     */
+
+    if(text.length > 8000){
+
+        showToast(
+            "Pesan maksimal 8000 karakter"
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * TAMPILKAN USER
+     */
+
+    addUserMessage(
+        text
+    );
+
+
+    prompt.value =
+        "";
+
+    resizeTextarea();
+
+
+    /*
+     * GENERATING
+     */
+
+    isGenerating =
+        true;
+
+    sendBtn.disabled =
+        true;
+
+
+    const aiMessage =
+        addAiMessage(
+            "",
+            true
+        );
+
+
+    const bubble =
+        aiMessage.querySelector(
+            "[data-bubble]"
+        );
+
+
+    try{
+
+        /*
+         * API LU:
+         *
+         * POST /api/ask
+         *
+         * Body:
+         * {
+         *   message: "..."
+         * }
+         */
+
+        const response =
+            await fetch(
+                "/api/ask",
+                {
+                    method:
+                        "POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json",
+
+                        "Accept":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            message:
+                                text
+
+                        })
+                }
+            );
+
+
+        /*
+         * BACA RESPONSE
+         */
+
+        let data = null;
+
+        try{
+
+            data =
+                await response.json();
+
+        }catch{
+
+            throw new Error(
+                "Server mengirim response yang tidak valid."
+            );
+
+        }
+
+
+        if(!response.ok){
+
+            throw new Error(
+                data?.error ||
+                "Server error " +
+                response.status
+            );
+
+        }
+
+
+        if(
+            !data ||
+            data.ok === false
+        ){
+
+            throw new Error(
+                data?.error ||
+                "oneAi gagal memberikan jawaban."
+            );
+
+        }
+
+
+        /*
+         * AMBIL JAWABAN
+         */
+
+        const answer =
+            data.response ||
+            data.answer ||
+            data.content ||
+            data.message ||
+            "";
+
+
+        if(!answer){
+
+            throw new Error(
+                "oneAi tidak mengembalikan jawaban."
+            );
+
+        }
+
+
+        /*
+         * CHAT ID
+         *
+         * API LU SAAT INI
+         * mengembalikan chat_id,
+         * tetapi belum menyimpan chat
+         * dari frontend ke chat berikutnya.
+         */
+
+        if(data.chat_id){
+
+            currentChatId =
+                data.chat_id;
+
+        }
+
+
+        /*
+         * TAMPILKAN JAWABAN
+         */
+
+        bubble.innerHTML =
+            renderMarkdown(
+                answer
+            );
+
+
+        /*
+         * BUTTON
+         */
+
+        addActions(
+            aiMessage
+        );
+
+
+        /*
+         * SIMPAN HISTORY LOKAL
+         */
+
+        saveLocalHistory(
+            text
+        );
+
+
+        loadHistory();
+
+
+        scrollBottom();
+
+
+    }catch(error){
+
+        console.error(
+            "oneAi:",
+            error
+        );
+
+
+        bubble.innerHTML = `
+
+            <p>
+                <strong>
+                    Gagal mendapatkan jawaban.
+                </strong>
+            </p>
+
+            <p
+                style="
+                    color:var(--muted);
+                    font-size:12px;
+                "
+            >
+                ${escapeHtml(
+                    error.message ||
+                    "Terjadi kesalahan."
+                )}
+            </p>
+
+        `;
+
+
+        addActions(
+            aiMessage
+        );
+
+
+        showToast(
+            "Gagal menghubungi oneAi"
+        );
+
+
+    }finally{
+
+        isGenerating =
+            false;
+
+        sendBtn.disabled =
+            false;
+
+        scrollBottom();
+
+        prompt.focus();
+
+    }
+
+}
+
+
+/* =========================================================
+   QUICK PROMPT
+========================================================= */
+
+document
+    .querySelectorAll(
+        ".quick-btn"
+    )
+    .forEach(
+        button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    prompt.value =
+                        button.dataset.prompt;
+
+                    resizeTextarea();
+
+                    prompt.focus();
+
+                }
+            );
+
+        }
+    );
+
+
+/* =========================================================
+   NEW CHAT
+========================================================= */
+
+newChatBtn.addEventListener(
+    "click",
+    startNewChat
+);
+
+
+function startNewChat(){
+
+    currentChatId =
+        null;
+
+    messages.innerHTML =
+        "";
+
+    welcome.style.display =
+        "flex";
+
+    prompt.value =
+        "";
+
+    resizeTextarea();
+
+    if(
+        window.innerWidth <= 760
+    ){
+
+        closeSidebar();
+
+    }
+
+    prompt.focus();
+
+}
+
+
+/* =========================================================
+   LOCAL HISTORY
+========================================================= */
+
+function getHistory(){
+
+    try{
+
+        return JSON.parse(
+            localStorage.getItem(
+                "oneai_history"
+            ) || "[]"
+        );
+
+    }catch{
+
+        return [];
+
+    }
+
+}
+
+
+function saveLocalHistory(
+    text
+){
+
+    if(!text){
+
+        return;
+
+    }
+
+
+    const history =
+        getHistory();
+
+
+    const id =
+        currentChatId ||
+        "local-" +
+        Date.now();
+
+
+    currentChatId =
+        id;
+
+
+    const existing =
+        history.find(
+            item =>
+                item.id === id
+        );
+
+
+    if(existing){
+
+        existing.title =
+            text.slice(
+                0,
+                60
+            );
+
+        existing.updated =
+            Date.now();
+
+    }else{
+
+        history.unshift({
+
+            id,
+
+            title:
+                text.slice(
+                    0,
+                    60
+                ),
+
+            updated:
+                Date.now()
+
+        });
+
+    }
+
+
+    localStorage.setItem(
+        "oneai_history",
+        JSON.stringify(
+            history.slice(
+                0,
+                40
+            )
+        )
+    );
+
+}
+
+
+/* =========================================================
+   LOAD HISTORY
+========================================================= */
+
+function loadHistory(){
+
+    const history =
+        getHistory();
+
+
+    historyEl.innerHTML =
+        "";
+
+
+    if(!history.length){
+
+        const empty =
+            document.createElement(
+                "div"
+            );
+
+        empty.className =
+            "history-empty";
+
+        empty.textContent =
+            "Belum ada percakapan.";
+
+        historyEl.appendChild(
+            empty
+        );
+
+        return;
+
+    }
+
+
+    history.forEach(
+        item => {
+
+            const el =
+                document.createElement(
+                    "div"
+                );
+
+            el.className =
+                "history-item" +
+                (
+                    item.id ===
+                    currentChatId
+                    ? " active"
+                    : ""
+                );
+
+
+            el.innerHTML = `
+
+                <div class="history-icon">
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+
+                        <path
+                            d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z"
+                        />
+
+                    </svg>
+
+                </div>
+
+
+                <div class="history-name">
+                    ${escapeHtml(
+                        item.title
+                    )}
+                </div>
+
+
+                <button
+                    class="history-delete"
+                    type="button"
+                    title="Hapus"
+                >
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+
+                        <path d="M3 6h18"/>
+
+                        <path
+                            d="M8 6V4h8v2"
+                        />
+
+                        <path
+                            d="m19 6-1 15H6L5 6"
+                        />
+
+                        <path
+                            d="M10 11v6M14 11v6"
+                        />
+
+                    </svg>
+
+                </button>
+
+            `;
+
+
+            el.addEventListener(
+                "click",
+                event => {
+
+                    if(
+                        event.target.closest(
+                            ".history-delete"
+                        )
+                    ){
+
+                        return;
+
+                    }
+
+
+                    currentChatId =
+                        item.id;
+
+                    loadHistory();
+
+                    showToast(
+                        "Riwayat dipilih"
+                    );
+
+                    if(
+                        window.innerWidth <= 760
+                    ){
+
+                        closeSidebar();
+
+                    }
+
+                }
+            );
+
+
+            const deleteButton =
+                el.querySelector(
+                    ".history-delete"
+                );
+
+
+            deleteButton.addEventListener(
+                "click",
+                event => {
+
+                    event.stopPropagation();
+
+                    deleteHistory(
+                        item.id
+                    );
+
+                }
+            );
+
+
+            historyEl.appendChild(
+                el
+            );
+
+        }
+    );
+
+}
+
+
+function deleteHistory(
+    id
+){
+
+    const history =
+        getHistory().filter(
+            item =>
+                item.id !== id
+        );
+
+
+    localStorage.setItem(
+        "oneai_history",
+        JSON.stringify(
+            history
+        )
+    );
+
+
+    if(
+        currentChatId === id
+    ){
+
+        startNewChat();
+
+    }
+
+
+    loadHistory();
+
+    showToast(
+        "Riwayat dihapus"
+    );
+
+}
+
+
+/* =========================================================
+   INIT
+========================================================= */
+
+loadTheme();
+
+loadHistory();
+
+resizeTextarea();
+
+setTimeout(
+    () => {
+
+        prompt.focus();
+
+    },
+    100
+);
+
+</script>
+
+</body>
+</html>
