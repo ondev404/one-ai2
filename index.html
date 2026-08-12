@@ -1,0 +1,1746 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>oneAi — AI Assistant</title>
+  <meta name="description" content="oneAi — AI Assistant by ONDEV">
+  <meta name="theme-color" content="#08090d">
+
+  <link rel="icon" type="image/png" href="/logo.png">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #08090d;
+      --bg2: #0c0e13;
+      --panel: #101218;
+      --panel2: #151820;
+      --border: rgba(255,255,255,.08);
+      --border2: rgba(255,255,255,.13);
+      --text: #f4f5f7;
+      --muted: #8b909d;
+      --muted2: #5e6470;
+      --blue: #2575ff;
+      --blue2: #00cfff;
+      --danger: #ff4d67;
+      --radius: 18px;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+    }
+
+    body {
+      position: relative;
+    }
+
+    button,
+    textarea {
+      font-family: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    /* =========================
+       APP
+    ========================= */
+
+    .app {
+      width: 100%;
+      height: 100dvh;
+      display: flex;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* =========================
+       SIDEBAR
+    ========================= */
+
+    .sidebar {
+      width: 280px;
+      height: 100%;
+      background: #0a0b0f;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      flex-shrink: 0;
+      z-index: 50;
+      transition: transform .25s ease;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 5px 4px 20px;
+    }
+
+    .brand-logo {
+      width: 39px;
+      height: 39px;
+      border-radius: 11px;
+      object-fit: cover;
+      background: #11141b;
+      box-shadow: 0 0 25px rgba(37,117,255,.16);
+    }
+
+    .brand-name {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -.7px;
+    }
+
+    .brand-name span {
+      color: #4d8dff;
+    }
+
+    .new-chat {
+      width: 100%;
+      height: 46px;
+      border-radius: 13px;
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #2168ff, #008fdd);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      box-shadow: 0 8px 28px rgba(24,104,255,.16);
+      transition: .2s;
+    }
+
+    .new-chat:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.08);
+    }
+
+    .new-chat:active {
+      transform: scale(.98);
+    }
+
+    .side-title {
+      color: var(--muted2);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 23px 7px 9px;
+    }
+
+    .chat-history {
+      flex: 1;
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+
+    .chat-history::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .chat-history::-webkit-scrollbar-thumb {
+      background: #272b34;
+      border-radius: 10px;
+    }
+
+    .history-empty {
+      color: var(--muted2);
+      font-size: 13px;
+      padding: 10px 7px;
+      line-height: 1.5;
+    }
+
+    .history-item {
+      width: 100%;
+      padding: 11px 12px;
+      margin-bottom: 4px;
+      border-radius: 10px;
+      color: #b8bdc8;
+      background: transparent;
+      text-align: left;
+      font-size: 13px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      transition: .15s;
+    }
+
+    .history-item:hover {
+      background: #14171d;
+      color: white;
+    }
+
+    .side-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 13px;
+      margin-top: 10px;
+    }
+
+    .developer {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px;
+    }
+
+    .developer-logo {
+      width: 33px;
+      height: 33px;
+      border-radius: 50%;
+      background: linear-gradient(135deg,#2168ff,#00cfff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 900;
+      color: white;
+    }
+
+    .developer-text {
+      min-width: 0;
+    }
+
+    .developer-text small {
+      display: block;
+      color: var(--muted2);
+      font-size: 10px;
+      margin-bottom: 2px;
+    }
+
+    .developer-text strong {
+      display: block;
+      font-size: 12px;
+      color: #d9dce3;
+    }
+
+    /* =========================
+       MAIN
+    ========================= */
+
+    .main {
+      min-width: 0;
+      height: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background:
+        radial-gradient(circle at 50% -15%, rgba(32,107,255,.08), transparent 35%),
+        var(--bg);
+    }
+
+    /* =========================
+       HEADER
+    ========================= */
+
+    .header {
+      height: 64px;
+      flex-shrink: 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 19px;
+      background: rgba(8,9,13,.88);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      z-index: 20;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .menu-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: transparent;
+      color: #c8ccd5;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .menu-btn:hover {
+      background: #151820;
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .header-brand img {
+      width: 31px;
+      height: 31px;
+      border-radius: 9px;
+      object-fit: cover;
+    }
+
+    .header-title {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -.4px;
+    }
+
+    .header-title span {
+      color: #747b88;
+      font-size: 12px;
+      font-weight: 500;
+      margin-left: 5px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 5px;
+    }
+
+    .icon-btn {
+      width: 37px;
+      height: 37px;
+      border-radius: 10px;
+      background: transparent;
+      color: #9096a2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: .15s;
+    }
+
+    .icon-btn:hover {
+      color: white;
+      background: #151820;
+    }
+
+    /* =========================
+       CHAT
+    ========================= */
+
+    .chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px 18px 160px;
+      scroll-behavior: smooth;
+    }
+
+    .chat::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .chat::-webkit-scrollbar-thumb {
+      background: #272b34;
+      border-radius: 10px;
+    }
+
+    .messages {
+      width: min(850px, 100%);
+      margin: 0 auto;
+    }
+
+    /* =========================
+       WELCOME
+    ========================= */
+
+    .welcome {
+      min-height: calc(100dvh - 225px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      padding: 30px 15px;
+    }
+
+    .welcome-logo {
+      width: 86px;
+      height: 86px;
+      border-radius: 25px;
+      object-fit: cover;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,.06),
+        0 20px 60px rgba(0,100,255,.16);
+      margin-bottom: 22px;
+    }
+
+    .welcome h1 {
+      font-size: clamp(27px, 6vw, 40px);
+      letter-spacing: -1.5px;
+      margin-bottom: 9px;
+    }
+
+    .welcome h1 span {
+      background: linear-gradient(90deg,#fff,#4c91ff,#00d5ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .welcome p {
+      max-width: 500px;
+      color: #777d89;
+      font-size: 14px;
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+
+    .suggestions {
+      width: min(650px, 100%);
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 9px;
+    }
+
+    .suggestion {
+      padding: 14px;
+      text-align: left;
+      color: #aeb3bd;
+      background: #101218;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      font-size: 13px;
+      transition: .18s;
+    }
+
+    .suggestion:hover {
+      color: white;
+      border-color: rgba(50,130,255,.35);
+      background: #131720;
+      transform: translateY(-1px);
+    }
+
+    .suggestion strong {
+      display: block;
+      color: #dfe2e8;
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+
+    /* =========================
+       MESSAGE
+    ========================= */
+
+    .message {
+      display: flex;
+      gap: 13px;
+      margin: 0 auto 28px;
+      animation: messageIn .22s ease;
+    }
+
+    @keyframes messageIn {
+      from {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .avatar {
+      width: 34px;
+      height: 34px;
+      flex: 0 0 34px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin-top: 1px;
+    }
+
+    .avatar.user {
+      background: #252a34;
+      color: #e8ebef;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .avatar.ai {
+      background: #11151c;
+      border: 1px solid rgba(61,132,255,.22);
+    }
+
+    .avatar.ai img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .message-body {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .message-name {
+      font-size: 12px;
+      color: #858b97;
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
+
+    .message.user .message-body {
+      max-width: 100%;
+    }
+
+    .message.user .content {
+      display: inline-block;
+      background: #171a21;
+      border: 1px solid var(--border);
+      border-radius: 5px 17px 17px 17px;
+      padding: 12px 15px;
+      color: #e7e9ed;
+    }
+
+    .content {
+      font-size: 14.5px;
+      line-height: 1.75;
+      color: #d6d9df;
+      word-wrap: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    .content p {
+      margin: 0 0 13px;
+    }
+
+    .content p:last-child {
+      margin-bottom: 0;
+    }
+
+    .content strong {
+      color: #fff;
+    }
+
+    .content ul,
+    .content ol {
+      margin: 8px 0 12px 22px;
+    }
+
+    .content li {
+      margin: 5px 0;
+    }
+
+    .content h1,
+    .content h2,
+    .content h3 {
+      color: white;
+      margin: 15px 0 8px;
+    }
+
+    .content h1 {
+      font-size: 22px;
+    }
+
+    .content h2 {
+      font-size: 19px;
+    }
+
+    .content h3 {
+      font-size: 16px;
+    }
+
+    .content code {
+      background: #171a20;
+      border: 1px solid var(--border);
+      padding: 2px 6px;
+      border-radius: 6px;
+      color: #77b5ff;
+      font-size: .9em;
+    }
+
+    .code-wrap {
+      margin: 13px 0;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #0b0d11;
+    }
+
+    .code-head {
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px 0 13px;
+      background: #12151b;
+      border-bottom: 1px solid var(--border);
+      color: #777e8b;
+      font-size: 11px;
+    }
+
+    .code-copy {
+      background: transparent;
+      color: #858b97;
+      padding: 5px;
+      border-radius: 5px;
+    }
+
+    .code-copy:hover {
+      color: white;
+      background: #20242c;
+    }
+
+    pre {
+      margin: 0;
+      padding: 15px;
+      overflow-x: auto;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.7;
+      color: #d9dde5;
+    }
+
+    .message-tools {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      margin-top: 8px;
+    }
+
+    .tool-btn {
+      width: 32px;
+      height: 29px;
+      border-radius: 8px;
+      background: transparent;
+      color: #626976;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tool-btn:hover {
+      color: #d9dce3;
+      background: #151820;
+    }
+
+    /* =========================
+       THINKING
+    ========================= */
+
+    .thinking {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      height: 26px;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      background: #687080;
+      border-radius: 50%;
+      animation: dot 1.2s infinite ease-in-out;
+    }
+
+    .dot:nth-child(2) {
+      animation-delay: .15s;
+    }
+
+    .dot:nth-child(3) {
+      animation-delay: .3s;
+    }
+
+    @keyframes dot {
+      0%, 60%, 100% {
+        opacity: .25;
+        transform: translateY(0);
+      }
+      30% {
+        opacity: 1;
+        transform: translateY(-4px);
+      }
+    }
+
+    /* =========================
+       COMPOSER
+    ========================= */
+
+    .composer-area {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 15px 18px 13px;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent,
+          rgba(8,9,13,.88) 25%,
+          var(--bg) 48%
+        );
+      z-index: 15;
+    }
+
+    .composer {
+      width: min(850px, 100%);
+      margin: 0 auto;
+    }
+
+    .input-box {
+      min-height: 58px;
+      max-height: 190px;
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      padding: 9px;
+      background: rgba(18,21,28,.96);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 18px;
+      box-shadow:
+        0 10px 40px rgba(0,0,0,.22),
+        inset 0 1px rgba(255,255,255,.025);
+      transition: border .2s, box-shadow .2s;
+    }
+
+    .input-box:focus-within {
+      border-color: rgba(55,133,255,.42);
+      box-shadow:
+        0 10px 40px rgba(0,0,0,.25),
+        0 0 0 3px rgba(37,117,255,.06);
+    }
+
+    .attach-btn {
+      width: 38px;
+      height: 38px;
+      flex: 0 0 38px;
+      border-radius: 11px;
+      background: transparent;
+      color: #737a87;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .attach-btn:hover {
+      color: white;
+      background: #1a1d24;
+    }
+
+    #messageInput {
+      flex: 1;
+      width: 100%;
+      min-height: 38px;
+      max-height: 160px;
+      resize: none;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: #f1f3f6;
+      font-size: 14px;
+      line-height: 1.5;
+      padding: 9px 3px;
+    }
+
+    #messageInput::placeholder {
+      color: #5f6570;
+    }
+
+    .send-btn {
+      width: 40px;
+      height: 40px;
+      flex: 0 0 40px;
+      border-radius: 12px;
+      background: #f4f5f7;
+      color: #101217;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: .15s;
+    }
+
+    .send-btn:hover {
+      background: white;
+      transform: translateY(-1px);
+    }
+
+    .send-btn:disabled {
+      opacity: .35;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .composer-info {
+      text-align: center;
+      color: #4f5560;
+      font-size: 10px;
+      margin-top: 9px;
+      line-height: 1.4;
+    }
+
+    .composer-info strong {
+      color: #656b76;
+    }
+
+    /* =========================
+       OVERLAY
+    ========================= */
+
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.6);
+      backdrop-filter: blur(2px);
+      z-index: 40;
+    }
+
+    /* =========================
+       TOAST
+    ========================= */
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 105px;
+      transform: translate(-50%, 20px);
+      opacity: 0;
+      pointer-events: none;
+      padding: 10px 15px;
+      border-radius: 10px;
+      background: #1b1f27;
+      border: 1px solid var(--border2);
+      color: #e9ebef;
+      font-size: 12px;
+      z-index: 100;
+      transition: .25s;
+      box-shadow: 0 10px 35px rgba(0,0,0,.35);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    /* =========================
+       MOBILE
+    ========================= */
+
+    @media (max-width: 760px) {
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        transform: translateX(-105%);
+        box-shadow: 20px 0 60px rgba(0,0,0,.35);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .overlay.show {
+        display: block;
+      }
+
+      .menu-btn {
+        display: flex;
+      }
+
+      .header {
+        height: 59px;
+        padding: 0 10px;
+      }
+
+      .header-title {
+        font-size: 16px;
+      }
+
+      .header-title span {
+        display: none;
+      }
+
+      .chat {
+        padding: 20px 13px 155px;
+      }
+
+      .message {
+        gap: 9px;
+        margin-bottom: 23px;
+      }
+
+      .avatar {
+        width: 31px;
+        height: 31px;
+        flex-basis: 31px;
+        border-radius: 9px;
+      }
+
+      .content {
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      .message.user .content {
+        padding: 10px 13px;
+      }
+
+      .suggestions {
+        grid-template-columns: 1fr;
+      }
+
+      .welcome {
+        min-height: calc(100dvh - 220px);
+      }
+
+      .welcome-logo {
+        width: 72px;
+        height: 72px;
+        border-radius: 20px;
+      }
+
+      .composer-area {
+        padding: 10px 9px 10px;
+      }
+
+      .input-box {
+        border-radius: 17px;
+        min-height: 55px;
+      }
+
+      .composer-info {
+        font-size: 9px;
+        margin-top: 7px;
+      }
+    }
+
+    @media (max-width: 390px) {
+      .header-actions .icon-btn:nth-child(2) {
+        display: none;
+      }
+
+      .welcome h1 {
+        font-size: 27px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+
+    <div class="brand">
+      <img src="/logo.png" class="brand-logo" alt="oneAi">
+      <div class="brand-name">one<span>Ai</span></div>
+    </div>
+
+    <button class="new-chat" id="newChatBtn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <path d="M12 5v14M5 12h14"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"/>
+      </svg>
+      Chat Baru
+    </button>
+
+    <div class="side-title">Percakapan</div>
+
+    <div class="chat-history" id="chatHistory">
+      <div class="history-empty">
+        Percakapan baru akan muncul di sini.
+      </div>
+    </div>
+
+    <div class="side-bottom">
+      <div class="developer">
+        <div class="developer-logo">O</div>
+        <div class="developer-text">
+          <small>Developed by</small>
+          <strong>ONDEV</strong>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+  <div class="overlay" id="overlay"></div>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- HEADER -->
+    <header class="header">
+
+      <div class="header-left">
+
+        <button class="menu-btn" id="menuBtn" aria-label="Menu">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none">
+            <path d="M4 6h16M4 12h16M4 18h16"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"/>
+          </svg>
+        </button>
+
+        <div class="header-brand">
+          <img src="/logo.png" alt="oneAi">
+          <div class="header-title">
+            oneAi
+            <span>AI Assistant</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="header-actions">
+
+        <button class="icon-btn" id="clearBtn" title="Chat baru">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
+            <path d="M3 6h18M9 6V4h6v2M19 6l-1 15H6L5 6"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        <button class="icon-btn" id="aboutBtn" title="Tentang oneAi">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="9"
+                    stroke="currentColor"
+                    stroke-width="1.7"/>
+            <path d="M12 11v5"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                  stroke-linecap="round"/>
+            <circle cx="12" cy="8" r="1"
+                    fill="currentColor"/>
+          </svg>
+        </button>
+
+      </div>
+
+    </header>
+
+    <!-- CHAT -->
+    <section class="chat" id="chat">
+      <div class="messages" id="messages">
+
+        <!-- WELCOME -->
+        <div class="welcome" id="welcome">
+
+          <img
+            src="/logo.png"
+            alt="oneAi"
+            class="welcome-logo"
+          >
+
+          <h1>
+            Halo, saya <span>oneAi</span>
+          </h1>
+
+          <p>
+            Asisten AI yang siap membantu menjawab pertanyaan,
+            membuat ide, menulis kode, menjelaskan sesuatu,
+            dan berbagai kebutuhan lainnya.
+          </p>
+
+          <div class="suggestions">
+
+            <button class="suggestion" data-prompt="Jelaskan bagaimana AI bekerja dengan bahasa yang mudah dipahami.">
+              <strong>🤖 Belajar AI</strong>
+              Bagaimana AI sebenarnya bekerja?
+            </button>
+
+            <button class="suggestion" data-prompt="Bantu saya membuat website modern menggunakan HTML, CSS, dan JavaScript.">
+              <strong>💻 Coding</strong>
+              Bantu saya membuat website
+            </button>
+
+            <button class="suggestion" data-prompt="Berikan saya 10 ide bisnis digital yang bisa dimulai dari HP.">
+              <strong>💡 Ide bisnis</strong>
+              Kasih saya ide bisnis digital
+            </button>
+
+            <button class="suggestion" data-prompt="Buatkan jadwal belajar yang efektif dan tidak membosankan.">
+              <strong>📚 Produktivitas</strong>
+              Bantu atur jadwal belajar
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- COMPOSER -->
+    <div class="composer-area">
+
+      <div class="composer">
+
+        <form id="chatForm">
+
+          <div class="input-box">
+
+            <button
+              type="button"
+              class="attach-btn"
+              id="attachBtn"
+              title="Lampiran"
+              aria-label="Lampiran"
+            >
+              <svg width="21" height="21" viewBox="0 0 24 24" fill="none">
+                <path d="M20.5 11.5l-8.7 8.7a6 6 0 01-8.5-8.5l9.2-9.2a4 4 0 015.7 5.7l-9.3 9.3a2 2 0 01-2.8-2.8l8.4-8.4"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"/>
+              </svg>
+            </button>
+
+            <textarea
+              id="messageInput"
+              rows="1"
+              autocomplete="off"
+              placeholder="Tulis pesan untuk oneAi..."
+            ></textarea>
+
+            <button
+              type="submit"
+              class="send-btn"
+              id="sendBtn"
+              disabled
+              aria-label="Kirim"
+            >
+              <svg width="21" height="21" viewBox="0 0 24 24" fill="none">
+                <path d="M12 19V5M6 11l6-6 6 6"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"/>
+              </svg>
+            </button>
+
+          </div>
+
+        </form>
+
+        <div class="composer-info">
+          oneAi dapat membuat kesalahan. Periksa informasi penting.
+          <br>
+          <strong>By Developer — ONDEV</strong>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+
+<script>
+/* =========================================================
+   oneAi FRONTEND
+   Backend tetap menggunakan /api/ask
+========================================================= */
+
+const chat = document.getElementById("chat");
+const messages = document.getElementById("messages");
+const welcome = document.getElementById("welcome");
+const form = document.getElementById("chatForm");
+const input = document.getElementById("messageInput");
+const sendBtn = document.getElementById("sendBtn");
+
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("overlay");
+const menuBtn = document.getElementById("menuBtn");
+const newChatBtn = document.getElementById("newChatBtn");
+const clearBtn = document.getElementById("clearBtn");
+const aboutBtn = document.getElementById("aboutBtn");
+const toast = document.getElementById("toast");
+
+let history = [];
+let busy = false;
+
+
+/* =========================================================
+   UTILITIES
+========================================================= */
+
+function showToast(text) {
+  toast.textContent = text;
+  toast.classList.add("show");
+
+  clearTimeout(window.toastTimer);
+
+  window.toastTimer = setTimeout(() => {
+    toast.classList.remove("show");
+  }, 1800);
+}
+
+
+function escapeHTML(text) {
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+
+/*
+  Markdown ringan supaya jawaban AI lebih rapi.
+*/
+function formatAI(text) {
+  if (!text) return "";
+
+  let source = escapeHTML(text);
+
+  const blocks = [];
+
+  source = source.replace(
+    /```([\w+-]*)\n?([\s\S]*?)```/g,
+    function(_, lang, code) {
+      const id = "code_" + Math.random().toString(36).slice(2);
+
+      blocks.push({
+        id,
+        lang: lang || "code",
+        code
+      });
+
+      return "___CODEBLOCK_" + (blocks.length - 1) + "___";
+    }
+  );
+
+  source = source.replace(
+    /\*\*(.*?)\*\*/g,
+    "<strong>$1</strong>"
+  );
+
+  source = source.replace(
+    /`([^`\n]+)`/g,
+    "<code>$1</code>"
+  );
+
+  source = source.replace(
+    /^### (.*)$/gm,
+    "<h3>$1</h3>"
+  );
+
+  source = source.replace(
+    /^## (.*)$/gm,
+    "<h2>$1</h2>"
+  );
+
+  source = source.replace(
+    /^# (.*)$/gm,
+    "<h1>$1</h1>"
+  );
+
+  source = source.replace(
+    /^[-*] (.*)$/gm,
+    "<li>$1</li>"
+  );
+
+  source = source.replace(
+    /(<li>.*<\/li>)/gs,
+    "<ul>$1</ul>"
+  );
+
+  source = source.replace(/\n{2,}/g, "</p><p>");
+  source = source.replace(/\n/g, "<br>");
+
+  source = "<p>" + source + "</p>";
+
+  source = source.replace(
+    /<p>___CODEBLOCK_(\d+)___<\/p>/g,
+    "___CODEBLOCK_$1___"
+  );
+
+  source = source.replace(
+    /___CODEBLOCK_(\d+)___/g,
+    function(_, index) {
+      const block = blocks[index];
+
+      return `
+        <div class="code-wrap">
+          <div class="code-head">
+            <span>${escapeHTML(block.lang)}</span>
+            <button
+              class="code-copy"
+              onclick="copyCode(this)"
+              data-code="${encodeURIComponent(block.code)}"
+            >
+              Copy
+            </button>
+          </div>
+          <pre>${block.code}</pre>
+        </div>
+      `;
+    }
+  );
+
+  return source;
+}
+
+
+/* =========================================================
+   COPY CODE
+========================================================= */
+
+window.copyCode = async function(button) {
+  try {
+    const code = decodeURIComponent(button.dataset.code);
+
+    await navigator.clipboard.writeText(code);
+
+    button.textContent = "Copied";
+
+    setTimeout(() => {
+      button.textContent = "Copy";
+    }, 1400);
+
+  } catch {
+    showToast("Gagal menyalin");
+  }
+};
+
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast("Jawaban disalin");
+  } catch {
+    showToast("Gagal menyalin");
+  }
+}
+
+
+/* =========================================================
+   MESSAGE UI
+========================================================= */
+
+function addUserMessage(text) {
+  hideWelcome();
+
+  const wrapper = document.createElement("div");
+  wrapper.className = "message user";
+
+  wrapper.innerHTML = `
+    <div class="avatar user">U</div>
+
+    <div class="message-body">
+      <div class="message-name">You</div>
+
+      <div class="content">
+        ${escapeHTML(text).replace(/\n/g, "<br>")}
+      </div>
+    </div>
+  `;
+
+  messages.appendChild(wrapper);
+
+  scrollBottom();
+}
+
+
+function addThinking() {
+  hideWelcome();
+
+  const wrapper = document.createElement("div");
+
+  wrapper.className = "message";
+  wrapper.id = "thinkingMessage";
+
+  wrapper.innerHTML = `
+    <div class="avatar ai">
+      <img src="/logo.png" alt="oneAi">
+    </div>
+
+    <div class="message-body">
+
+      <div class="message-name">
+        oneAi
+      </div>
+
+      <div class="thinking">
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+
+    </div>
+  `;
+
+  messages.appendChild(wrapper);
+
+  scrollBottom();
+
+  return wrapper;
+}
+
+
+function removeThinking() {
+  const el = document.getElementById("thinkingMessage");
+
+  if (el) {
+    el.remove();
+  }
+}
+
+
+function addAIMessage(text) {
+  hideWelcome();
+
+  const wrapper = document.createElement("div");
+
+  wrapper.className = "message ai";
+
+  wrapper.innerHTML = `
+    <div class="avatar ai">
+      <img src="/logo.png" alt="oneAi">
+    </div>
+
+    <div class="message-body">
+
+      <div class="message-name">
+        oneAi
+      </div>
+
+      <div class="content">
+        ${formatAI(text)}
+      </div>
+
+      <div class="message-tools">
+
+        <button
+          class="tool-btn copy-answer"
+          title="Salin"
+        >
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+            <rect x="8" y="8" width="12" height="12" rx="2"
+              stroke="currentColor"
+              stroke-width="1.8"/>
+            <path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"
+              stroke="currentColor"
+              stroke-width="1.8"/>
+          </svg>
+        </button>
+
+        <button
+          class="tool-btn regenerate-answer"
+          title="Regenerate"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M20 11a8.1 8.1 0 00-14.8-3L3 11"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"/>
+            <path d="M3 5v6h6"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"/>
+            <path d="M4 13a8.1 8.1 0 0014.8 3L21 13"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"/>
+            <path d="M21 19v-6h-6"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+      </div>
+
+    </div>
+  `;
+
+  messages.appendChild(wrapper);
+
+  const copyButton = wrapper.querySelector(".copy-answer");
+
+  copyButton.addEventListener("click", () => {
+    copyText(text);
+  });
+
+  const regenerateButton =
+    wrapper.querySelector(".regenerate-answer");
+
+  regenerateButton.addEventListener("click", () => {
+    regenerateLast();
+  });
+
+  scrollBottom();
+
+  return wrapper;
+}
+
+
+/* =========================================================
+   WELCOME
+========================================================= */
+
+function hideWelcome() {
+  if (welcome) {
+    welcome.style.display = "none";
+  }
+}
+
+
+function showWelcome() {
+  if (welcome) {
+    welcome.style.display = "flex";
+  }
+}
+
+
+/* =========================================================
+   SCROLL
+========================================================= */
+
+function scrollBottom() {
+  requestAnimationFrame(() => {
+    chat.scrollTop = chat.scrollHeight;
+  });
+}
+
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+function resizeInput() {
+  input.style.height = "auto";
+
+  const height = Math.min(
+    input.scrollHeight,
+    160
+  );
+
+  input.style.height = height + "px";
+}
+
+
+input.addEventListener("input", () => {
+  resizeInput();
+
+  sendBtn.disabled =
+    !input.value.trim() ||
+    busy;
+});
+
+
+input.addEventListener("keydown", event => {
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+
+    if (!busy && input.value.trim()) {
+      form.requestSubmit();
+    }
+  }
+});
+
+
+/* =========================================================
+   API
+========================================================= */
+
+async function askAI(message) {
+  const response = await fetch("/api/ask", {
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({
+      message,
+      history
+    })
+  });
+
+  const raw = await response.text();
+
+  if (!response.ok) {
+    throw new Error(
+      raw || "Server mengalami error."
+    );
+  }
+
+  let data;
+
+  try {
+    data = JSON.parse(raw);
+  } catch {
+    throw new Error(
+      "Backend mengembalikan data yang bukan JSON: " +
+      raw.slice(0, 300)
+    );
+  }
+
+  /*
+    Mendukung beberapa kemungkinan format
+    response dari backend.
+  */
+
+  const answer =
+    data.response ||
+    data.answer ||
+    data.message ||
+    data.content ||
+    data.text;
+
+  if (!answer) {
+    if (typeof data === "string") {
+      return data;
+    }
+
+    throw new Error(
+      "Respons AI kosong."
+    );
+  }
+
+  return answer;
+}
+
+
+/* =========================================================
+   SEND
+========================================================= */
+
+form.addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const text = input.value.trim();
+
+  if (!text || busy) {
+    return;
+  }
+
+  busy = true;
+  sendBtn.disabled = true;
+
+  addUserMessage(text);
+
+  input.value = "";
+  input.style.height = "auto";
+
+  const thinking = addThinking();
+
+  try {
+
+    const answer = await askAI(text);
+
+    removeThinking();
+
+    addAIMessage(answer);
+
+    history.push({
+      role: "user",
+      content: text
+    });
+
+    history.push({
+      role: "assistant",
+      content: answer
+    });
+
+    saveHistory();
+
+  } catch (error) {
+
+    removeThinking();
+
+    addAIMessage(
+      "Maaf, terjadi error: " +
+      error.message
+    );
+
+  } finally {
+
+    busy = false;
+
+    sendBtn.disabled =
+      !input.value.trim();
+
+    input.focus();
+
+    scrollBottom();
+  }
+});
+
+
+/* =========================================================
+   REGENERATE
+========================================================= */
+
+async function regenerateLast() {
+
+  if (busy || !history.length) {
+    return;
+  }
+
+  let lastUser = null;
+
+  for (let i = history.length - 1; i >= 0; i--) {
+    if (history[i].role === "user") {
+      lastUser = history[i].content;
+      break;
+    }
+  }
+
+  if (!lastUser) {
+    return;
+  }
+
+  busy = true;
+
+  const oldMessages =
+    messages.querySelectorAll(".message.ai");
+
+  const lastAI =
+    oldMessages[oldMessages.length - 1];
+
+  if (lastAI) {
+    lastAI.remove();
+  }
+
+  /*
+    Hapus respons
