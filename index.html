@@ -3,24 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>oneAi — AI Assistant</title>
+<title>oneAi</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#0b0d10;color:#f5f5f5;font-family:Inter,system-ui,Arial,sans-serif;height:100vh}
-.app{height:100vh;display:flex;flex-direction:column;max-width:900px;margin:auto}
-header{height:64px;border-bottom:1px solid #22252b;display:flex;align-items:center;padding:0 18px;font-weight:800;font-size:20px}
-header span{color:#777;font-size:12px;margin-left:8px;font-weight:500}
-#chat{flex:1;overflow:auto;padding:22px 16px 130px}
-.msg{display:flex;margin:0 auto 22px;max-width:780px;gap:12px}
-.avatar{width:32px;height:32px;border-radius:10px;background:#171a20;display:grid;place-items:center;font-size:12px;flex:none}
-.bubble{line-height:1.65;white-space:pre-wrap;word-break:break-word;max-width:calc(100% - 44px)}
-.user .avatar{background:#fff;color:#000}.user .bubble{background:#171a20;padding:11px 14px;border-radius:16px}
-.empty{text-align:center;color:#777;margin-top:22vh}.empty h1{color:#fff;font-size:34px;margin:0 0 8px}.empty p{margin:0}
-.composer{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(transparent,#0b0d10 28%);padding:24px 16px 18px}
-.box{max-width:780px;margin:auto;background:#15181d;border:1px solid #2a2e35;border-radius:18px;display:flex;align-items:end;padding:8px}
-textarea{flex:1;background:transparent;color:#fff;border:0;outline:0;resize:none;padding:10px;font:inherit;min-height:42px;max-height:150px}
-button{border:0;border-radius:12px;width:42px;height:42px;background:#fff;color:#000;font-weight:800;cursor:pointer}button:disabled{opacity:.4}
-small{display:block;text-align:center;color:#555;margin-top:7px;font-size:11px}
-@media(max-width:600px){header{height:56px}.empty h1{font-size:28px}.bubble{font-size:14px}}
+*{box-sizing:border-box}body{margin:0;background:#0b0d10;color:#f5f5f5;font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;height:100vh}.app{height:100vh;display:flex;flex-direction:column;max-width:900px;margin:auto}header{height:64px;border-bottom:1px solid #24272d;display:flex;align-items:center;padding:0 18px;font-size:21px;font-weight:800}header span{font-size:13px;color:#777;margin-left:8px;font-weight:500}#chat{flex:1;overflow:auto;padding:24px 16px 130px}.empty{text-align:center;color:#777;margin-top:23vh}.empty h1{color:#fff;margin:0 0 8px;font-size:34px}.empty p{margin:0}.msg{max-width:780px;margin:0 auto 24px;display:flex;gap:12px}.avatar{width:32px;height:32px;border-radius:10px;background:#171a20;display:grid;place-items:center;font-size:12px;flex:none}.user .avatar{background:#fff;color:#000}.bubble{line-height:1.65;white-space:pre-wrap;word-break:break-word;max-width:calc(100% - 44px)}.user .bubble{background:#171a20;padding:11px 14px;border-radius:16px}.composer{position:fixed;left:0;right:0;bottom:0;padding:24px 16px 16px;background:linear-gradient(transparent,#0b0d10 30%)}form{max-width:780px;margin:auto;background:#15181d;border:1px solid #2a2e35;border-radius:18px;padding:8px;display:flex;align-items:end}textarea{flex:1;background:transparent;color:#fff;border:0;outline:0;resize:none;padding:10px;font:inherit;min-height:42px;max-height:150px}button{width:42px;height:42px;border:0;border-radius:12px;background:#fff;color:#000;font-weight:900}button:disabled{opacity:.4}small{display:block;text-align:center;color:#555;font-size:11px;margin-top:7px}@media(max-width:600px){header{height:56px}.empty h1{font-size:28px}.bubble{font-size:14px}}
 </style>
 </head>
 <body>
@@ -28,33 +13,58 @@ small{display:block;text-align:center;color:#555;margin-top:7px;font-size:11px}
 <header>oneAi <span>AI Assistant</span></header>
 <main id="chat"><div class="empty" id="empty"><h1>Halo 👋</h1><p>Ada yang bisa oneAi bantu?</p></div></main>
 <div class="composer">
-<form class="box" id="form"><textarea id="input" placeholder="Tulis pesan..." rows="1"></textarea><button id="send" type="submit">↑</button></form>
+<form id="form"><textarea id="input" placeholder="Tulis pesan..." rows="1"></textarea><button id="send">↑</button></form>
 <small>oneAi dapat membuat kesalahan. Periksa informasi penting.</small>
-</div></div>
+</div>
+</div>
 <script>
-const chat=document.getElementById('chat'),form=document.getElementById('form'),input=document.getElementById('input'),send=document.getElementById('send');
-let empty=document.getElementById('empty'),history=[];
+const chat=document.getElementById("chat"),form=document.getElementById("form"),input=document.getElementById("input"),send=document.getElementById("send");
+let empty=document.getElementById("empty"),history=[];
+
 function add(role,text){
  if(empty){empty.remove();empty=null}
- const row=document.createElement('div');row.className='msg '+role;
- row.innerHTML='<div class="avatar">'+(role==='user'?'U':'AI')+'</div><div class="bubble"></div>';
- row.querySelector('.bubble').textContent=text;chat.appendChild(row);chat.scrollTop=chat.scrollHeight;return row.querySelector('.bubble')
+ const row=document.createElement("div");
+ row.className="msg "+role;
+ const av=document.createElement("div");av.className="avatar";av.textContent=role==="user"?"U":"AI";
+ const bubble=document.createElement("div");bubble.className="bubble";bubble.textContent=text;
+ row.append(av,bubble);chat.appendChild(row);chat.scrollTop=chat.scrollHeight;
+ return bubble;
 }
-input.addEventListener('input',()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,150)+'px'});
-input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();form.requestSubmit()}});
-form.addEventListener('submit',async e=>{
- e.preventDefault();const text=input.value.trim();if(!text||send.disabled)return;
- add('user',text);input.value='';input.style.height='auto';send.disabled=true;
- const bubble=add('ai','oneAi sedang berpikir...');
+
+input.addEventListener("input",()=>{input.style.height="auto";input.style.height=Math.min(input.scrollHeight,150)+"px"});
+input.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();form.requestSubmit()}});
+
+form.addEventListener("submit",async e=>{
+ e.preventDefault();
+ const text=input.value.trim();
+ if(!text||send.disabled)return;
+
+ add("user",text);
+ input.value="";input.style.height="auto";send.disabled=true;
+ const bubble=add("ai","oneAi sedang berpikir...");
+
  try{
-   const r=await fetch('/api/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text,history})});
-   const raw=await r.text();let data;
-   try{data=JSON.parse(raw)}catch{throw new Error('Backend mengembalikan data yang bukan JSON: '+raw.slice(0,180))}
-   if(!r.ok||!data.ok)throw new Error(data.error||'Request gagal');
-   bubble.textContent=data.response||'Tidak ada jawaban.';
-   history.push({role:'user',content:text},{role:'assistant',content:data.response||''});
- }catch(err){bubble.textContent='Maaf, terjadi error: '+err.message}
- finally{send.disabled=false;input.focus();chat.scrollTop=chat.scrollHeight}
+   const r=await fetch("/api/ask",{
+     method:"POST",
+     headers:{"Content-Type":"application/json"},
+     body:JSON.stringify({message:text,history})
+   });
+
+   const raw=await r.text();
+   let data;
+
+   try{data=JSON.parse(raw)}
+   catch{throw new Error("Server mengembalikan error: "+raw.slice(0,220))}
+
+   if(!r.ok||!data.ok)throw new Error(data.error||"Request gagal");
+
+   bubble.textContent=data.response||"Tidak ada jawaban.";
+   history.push({role:"user",content:text},{role:"assistant",content:data.response||""});
+ }catch(err){
+   bubble.textContent="Maaf, terjadi error: "+err.message;
+ }finally{
+   send.disabled=false;input.focus();chat.scrollTop=chat.scrollHeight;
+ }
 });
 </script>
 </body>
